@@ -7,9 +7,10 @@ A web application that calculates any extra charges that are imposed by restaura
 ## Project Overview
 
 Receiptaurant serves the following objectives:<br />
-**Calculate Extra Charges:** Automatically detects and calculates any hidden or additional charges imposed by restaurants based on an uploaded dataset of bills.<br/>
-**Discount Detection:** Analyzes the bills to determine the best time of year to receive discounts and promotions from different restaurants.<br/>
-**Price Comparison:** Uses APIs from popular food delivery platforms to show restaurant prices, promotions, and help users choose the delivery service with the best deals.<br/>
+
+* **Calculate Extra Charges:** Automatically detects and calculates any hidden or additional charges imposed by restaurants based on an uploaded dataset of bills.<br/>
+* **Discount Detection:** Analyzes the bills to determine the best time of year to receive discounts and promotions from different restaurants.<br/>
+* **Price Comparison:** Uses APIs from popular food delivery platforms to show restaurant prices, promotions, and help users choose the delivery service with the best deals.<br/>
 
 By using OCR (Optical Character Recognition) to extract bill data and implementing a large language model (LLM) to analyze extra charges, Receiptaurant provides users with a comprehensive overview of a restaurant’s pricing patterns.<br/>
 
