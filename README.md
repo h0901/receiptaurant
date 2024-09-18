@@ -16,13 +16,13 @@ By using OCR (Optical Character Recognition) to extract bill data and implementi
 
 ## Key Features
 
-**OCR Bill Data Extraction:** Extracts relevant information from bill images using OCR.<br/>
-**Extra Charge Calculation:** Leverages an LLM to identify and calculate additional fees on restaurant bills.<br/>
-**Discount Trend Analysis:** Utilizes historical bill data to determine the timeframe with the highest number of discounts and promotions.<br/>
-**API Integration with Food Delivery Platforms:** Fetches real-time restaurant prices, deals, and promotions from food delivery apps (e.g., UberEats, DoorDash, GrubHub).<br/>
-**User-Friendly Overview:** Displays pricing ranges, promotions, and additional charges for each restaurant in a clean and intuitive interface.<br/>
+* **OCR Bill Data Extraction:** Extracts relevant information from bill images using OCR.<br/>
+* **Extra Charge Calculation:** Leverages an LLM to identify and calculate additional fees on restaurant bills.<br/>
+* **Discount Trend Analysis:** Utilizes historical bill data to determine the timeframe with the highest number of discounts and promotions.<br/>
+* **API Integration with Food Delivery Platforms:** Fetches real-time restaurant prices, deals, and promotions from food delivery apps (e.g., UberEats, DoorDash, GrubHub).<br/>
+* **User-Friendly Overview:** Displays pricing ranges, promotions, and additional charges for each restaurant in a clean and intuitive interface.<br/>
 
 ## Security Considerations
 
-**Integrity:** The main issue occurs if the bills provided for the dataset have been tampered with beforehand. Additionally, the results from the third-party APIs could be modified.<br/>
-**Availability:** Since the application is using third-party APIs, there is a chance of the application being subjected to denial of service attacks.<br/>
+* **Integrity:** The main issue occurs if the bills provided for the dataset have been tampered with beforehand. Additionally, the results from the third-party APIs could be modified.<br/>
+* **Availability:** Since the application is using third-party APIs, there is a chance of the application being subjected to denial of service attacks.<br/>
