@@ -16,11 +16,11 @@ input[type="text"] {
   width: 200%;
   max-width: 900px;
   font-size: 32px;
-  background-color: #185519;
-  color: #185519;
+  background-color: #f5f7f8;
+  color: #f5f7f8;
   box-shadow: 0 0 15px rgb(24, 85, 25);
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="%23185519" viewBox="0 0 24 24"><path d="M10.5 2C5.81 2 2 5.81 2 10.5S5.81 19 10.5 19c1.67 0 3.21-.43 4.54-1.17l5.35 5.35c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-5.35-5.35C17.57 13.71 19 11.17 19 8.5 19 5.81 15.19 2 10.5 2zm0 2C14.08 4 17 6.92 17 10.5S14.08 17 10.5 17 4 14.08 4 10.5 6.92 4 10.5 4z"/></svg>')
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="%23ffffff" viewBox="0 0 24 24"><path d="M10.5 2C5.81 2 2 5.81 2 10.5S5.81 19 10.5 19c1.67 0 3.21-.43 4.54-1.17l5.35 5.35c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-5.35-5.35C17.57 13.71 19 11.17 19 8.5 19 5.81 15.19 2 10.5 2zm0 2C14.08 4 17 6.92 17 10.5S14.08 17 10.5 17 4 14.08 4 10.5 6.92 4 10.5 4z"/></svg>')
     no-repeat 15px center;
   background-size: 30px;
 }
@@ -28,7 +28,7 @@ input[type="text"] {
 input[type="text"]:focus {
   outline: none;
   box-shadow: 0 0 15px rgb(24, 85, 25);
-  border-color: #185519;
+  border-color: #f5f7f8;
 }
 
 .suggestions {

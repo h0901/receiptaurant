@@ -1,23 +1,17 @@
 import { useState } from "react";
 import "/src/styles/Search.css";
+import { SearchProps } from "../interface";
 
-const suggestions: string[] = [
-  "McDonalds",
-  "Dunkin Donuts",
-  "KFC",
-  "Starbucks",
-];
-
-function Search() {
+function Search({ restaurants }: SearchProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
 
-  const handleSearchChange = (event: any) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
     if (value) {
-      const filtered: string[] = suggestions.filter((suggestion) =>
-        suggestion.toLowerCase().includes(value.toLowerCase())
+      const filtered: string[] = restaurants.filter((restaurant) =>
+        restaurant.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredSuggestions(filtered);
     } else {
@@ -31,7 +25,7 @@ function Search() {
   };
 
   return (
-    <div className="Search">
+    <div className="search">
       <input
         type="text"
         placeholder="Search for restaurant"
@@ -40,8 +34,11 @@ function Search() {
       />
       {filteredSuggestions.length > 0 && (
         <ul className="suggestions">
-          {filteredSuggestions.map((suggestion, index) => (
-            <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
+          {filteredSuggestions.map((suggestion) => (
+            <li
+              key={suggestion}
+              onClick={() => handleSuggestionClick(suggestion)}
+            >
               {suggestion}
             </li>
           ))}

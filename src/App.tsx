@@ -1,6 +1,15 @@
 import "./App.css";
+import RestaurantCard from "./components/RestaurantCard";
 import Search from "./components/Search";
 import { FaDrumstickBite } from "react-icons/fa";
+import { RestaurantDetails } from "./interface"; 
+
+const restaurants: RestaurantDetails[] = [
+  { id: '1', name: "Dunkin" },
+  { id: '2', name: "McD" }
+];
+
+const resList: string[] = ["Dunkin", "McD"];
 
 function App() {
   return (
@@ -8,10 +17,11 @@ function App() {
       <h1>
         Re
         <FaDrumstickBite className="icon" />
-        eiptaraunt
+        eiptaurant
       </h1>
       <div className="search-container">
-        <Search />
+        <Search restaurants={resList} />
+        <RestaurantCard restaurants={restaurants} />
       </div>
     </>
   );
