@@ -1,0 +1,22 @@
+body {
+  font-family: Perpetua, Baskerville, Big Caslon, Palatino Linotype, Palatino,
+    serif;
+  background-color: #f5f7f8;
+  color: #185519;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.title {
+  text-align: center;
+  font-size: 50px;
+  margin-top: 20px;
+}
+
+.icon {
+  margin-top: 20px;
+}
