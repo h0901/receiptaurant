@@ -25,7 +25,7 @@ const UploadReceipt = () => {
         const response: Receipt = await analyze_receipt(image);
         setResponseData(response);
         setError(null);
-        console.log(response)
+        console.log(response);
         await sendReceiptDataToBackend(response, selectedFile.name);
       } catch (error) {
         console.error("Error analyzing receipt:", error);
@@ -43,7 +43,10 @@ const UploadReceipt = () => {
     }
 
     const [month, day, year] = data.date.split("/");
-    const formattedDate = `20${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    const formattedDate = `20${year}-${month.padStart(2, "0")}-${day.padStart(
+      2,
+      "0"
+    )}`;
 
     try {
       const restaurantResponse = await backendApi.post("/restaurant", {
@@ -62,8 +65,12 @@ const UploadReceipt = () => {
       if (data.surcharges && Array.isArray(data.surcharges)) {
         for (const surcharge of data.surcharges) {
           const surchargeName = surcharge["surcharge_name"];
-          const surchargePercent = surcharge["surcharge_percentage"] ? parseFloat(surcharge["surcharge_percentage"].replace('%', '')) : 0;
-          const surchargeAmount = surcharge["surcharge_value"]? parseFloat(surcharge["surcharge_value"].replace(/,/g, '')): 0;
+          const surchargePercent = surcharge["surcharge_percentage"]
+            ? parseFloat(surcharge["surcharge_percentage"].replace("%", ""))
+            : 0;
+          const surchargeAmount = surcharge["surcharge_value"]
+            ? parseFloat(surcharge["surcharge_value"].replace(/,/g, ""))
+            : 0;
 
           await backendApi.post("/surcharge", {
             res_id: restaurantId,
@@ -96,11 +103,15 @@ const UploadReceipt = () => {
           <div>Total: {responseData.total}</div>
           <div>Date: {responseData.date}</div>
           <div>Surcharges:</div>
-          {responseData.surcharges && responseData.surcharges.length > 0 && responseData.surcharges.map((s, index) => (
-            <div key={index}>
-              <p>{s["surcharge_name"]}: {s["surcharge_value"]}</p>
-            </div>
-          ))}
+          {responseData.surcharges &&
+            responseData.surcharges.length > 0 &&
+            responseData.surcharges.map((s, index) => (
+              <div key={index}>
+                <p>
+                  {s["surcharge_name"]}: {s["surcharge_value"]}
+                </p>
+              </div>
+            ))}
           <div>Taxes: {responseData.taxes}</div>
         </div>
       )}

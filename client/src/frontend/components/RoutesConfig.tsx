@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const RoutesConfig = () => {
-  const { user } = useClerk();
+  const { user, signOut } = useClerk();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,17 +18,16 @@ const RoutesConfig = () => {
   return (
     <Routes>
       <Route path="/sign-in" element={<AuthPage />} />
-
       <Route
         path="/upload"
         element={
           <SignedIn>
+            <button onClick={() => signOut()}>Sign Out</button>
             <h2>Welcome {user?.firstName}!</h2>
             <UploadReceipt />
           </SignedIn>
         }
       />
-
       <Route
         path="/"
         element={
@@ -37,7 +36,6 @@ const RoutesConfig = () => {
           </SignedOut>
         }
       />
-
       <Route
         path="*"
         element={
