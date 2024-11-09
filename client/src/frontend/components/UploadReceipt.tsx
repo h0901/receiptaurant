@@ -26,6 +26,7 @@ const UploadReceipt = () => {
         setResponseData(response);
         setError(null);
         console.log(response);
+        console.log("Surcharges:", response.surcharges);
         await sendReceiptDataToBackend(response, selectedFile.name);
       } catch (error) {
         console.error("Error analyzing receipt:", error);
