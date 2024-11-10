@@ -1,21 +1,25 @@
-const express = require('express');
-const db = require('../db.js')
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const restaurantRoutes = require("./routes/restaurant.js");
+const billRoutes = require("./routes/bill.js");
+const surchargeRoutes = require("./routes/surcharges.js");
 
-const router = express.Router();
+const app = express();
 
-router.post('/', async (req, res) => {
-  const { res_id, bill_id, surcharge_name, surcharge_percent, surcharge_amount } = req.body;
+const corsOptions = {
+  origin: ["http://localhost:5173", "https://your-vercel-domain.vercel.app"],
+};
 
-  try {
-    const [result] = await db.query(
-      'INSERT INTO Surcharges (res_id, bill_id, surcharge_name, surcharge_percent, surcharge_amount) VALUES (?, ?, ?, ?, ?)',
-      [res_id, bill_id, surcharge_name, surcharge_percent, surcharge_amount]
-    );
-    res.status(201).json({ message: 'Surcharge added', surchargeId: result.insertId });
-  } catch (error) {
-    console.error('Error adding surcharge:', error);
-    res.status(500).json({ error: 'Failed to add surcharge' });
-  }
+app.use(cors(corsOptions));
+app.use(express.json());
+
+app.get("/api", (req, res) => {
+  res.json({ fruits: ["apple", "banana", "orange"] });
 });
 
-module.exports = router;
+app.use("/api/restaurant", restaurantRoutes);
+app.use("/api/bill", billRoutes);
+app.use("/api/surcharge", surchargeRoutes);
+
+module.exports = app;

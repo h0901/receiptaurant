@@ -58,7 +58,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://your-vercel-domain.vercel.app"],
+  origin: ["http://localhost:5173", "https://cs484-final-project.vercel.app/"],
 };
 
 app.use(cors(corsOptions));
