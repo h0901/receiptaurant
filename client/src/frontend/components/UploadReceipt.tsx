@@ -2,11 +2,15 @@ import { useState } from "react";
 import { analyze_receipt } from "../apis/analyzeReceipt";
 import { Receipt } from "../interfaces";
 import backendApi from "../apis/axiosConfig";
+import Header from "./Header";
+import '../styles/UploadReceipt.css'
+import Loader from './Loader';
 
 const UploadReceipt = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [responseData, setResponseData] = useState<Receipt | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFile(event.target.files?.[0] || null);
@@ -16,6 +20,7 @@ const UploadReceipt = () => {
     if (!selectedFile) return;
 
     const reader = new FileReader();
+    setLoading(true);
 
     reader.onloadend = async () => {
       const result = reader.result as string;
@@ -23,6 +28,15 @@ const UploadReceipt = () => {
 
       try {
         const response: Receipt = await analyze_receipt(image);
+
+        response.surcharges = response.surcharges.map((surcharge) => {
+          if (!surcharge.surcharge_percentage && surcharge.surcharge_value && response.subtotal) {
+            const subtotal = parseFloat(response.subtotal);
+            const surchargeAmount = parseFloat(surcharge.surcharge_value.replace(/,/g, ""));
+            surcharge.surcharge_percentage = subtotal > 0 ? ((surchargeAmount / subtotal) * 100).toFixed(2) + "%" : "0%";
+          }
+          return surcharge;
+        });
         setResponseData(response);
         setError(null);
         console.log(response);
@@ -31,6 +45,9 @@ const UploadReceipt = () => {
       } catch (error) {
         console.error("Error analyzing receipt:", error);
         setError("Error analyzing receipt. Please try again.");
+      }
+      finally {
+        setLoading(false); 
       }
     };
 
@@ -66,12 +83,17 @@ const UploadReceipt = () => {
       if (data.surcharges && Array.isArray(data.surcharges)) {
         for (const surcharge of data.surcharges) {
           const surchargeName = surcharge["surcharge_name"];
-          const surchargePercent = surcharge["surcharge_percentage"]
+          let surchargePercent = surcharge["surcharge_percentage"]
             ? parseFloat(surcharge["surcharge_percentage"].replace("%", ""))
             : 0;
           const surchargeAmount = surcharge["surcharge_value"]
             ? parseFloat(surcharge["surcharge_value"].replace(/,/g, ""))
             : 0;
+
+          if (surchargePercent == 0 && surchargeAmount > 0 && data.subtotal) {
+            const subtotal = parseFloat(data.subtotal);
+            surchargePercent = subtotal > 0 ? (surchargeAmount / subtotal) * 100 : 0;
+          }
 
           await backendApi.post("/surcharge", {
             res_id: restaurantId,
@@ -91,31 +113,36 @@ const UploadReceipt = () => {
   };
 
   return (
-    <div>
-      <h2>Upload Receipt</h2>
-      <input type="file" accept="image/*" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload</button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {responseData && (
-        <div>
-          <h3>Response Data:</h3>
-          <div>Restaurant: {responseData.restaurant_name}</div>
-          <div>Subtotal: {responseData.subtotal}</div>
-          <div>Total: {responseData.total}</div>
-          <div>Date: {responseData.date}</div>
-          <div>Surcharges:</div>
-          {responseData.surcharges &&
-            responseData.surcharges.length > 0 &&
-            responseData.surcharges.map((s, index) => (
-              <div key={index}>
-                <p>
-                  {s["surcharge_name"]}: {s["surcharge_value"]}
-                </p>
-              </div>
-            ))}
-          <div>Taxes: {responseData.taxes}</div>
-        </div>
-      )}
+    <div className="home-container">
+      <Header />
+      <div className="page-container">
+        <h2 className="page-heading">Upload Receipt</h2>
+        <input type="file" accept="image/*" onChange={handleFileChange} />
+        <button onClick={handleUpload} className="upload-btn">Upload</button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {loading && <Loader />} 
+        {!loading && responseData && (
+          <div className="response-data">
+            <div className="response-item">Restaurant: {responseData.restaurant_name}</div>
+            <div className="response-item">Subtotal: {responseData.subtotal}</div>
+            <div className="response-item">Total: {responseData.total}</div>
+            <div className="response-item">Date: {responseData.date}</div>
+            <div className="response-item">Taxes: {responseData.taxes}</div>
+            <div className="surcharges-section">
+              <h4 className="surcharges-title">Surcharges</h4>
+              {responseData.surcharges &&
+                responseData.surcharges.length > 0 &&
+                responseData.surcharges.map((s, index) => (
+                  <div key={index} className="surcharge-item">
+                    <span className="surcharge-name">{s["surcharge_name"]} | </span>
+                    <span className="surcharge-value">Value: {s["surcharge_value"]} | </span>
+                    <span className="surcharge-percent">Percentage: {s["surcharge_percentage"]}</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

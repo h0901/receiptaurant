@@ -4,14 +4,16 @@ import AuthPage from "./AuthPage";
 import UploadReceipt from "./UploadReceipt";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Home from "./Home";
+import ViewSurcharges from "./ViewSurcharges";
 
 const RoutesConfig = () => {
-  const { user, signOut } = useClerk();
+  const { user} = useClerk();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      navigate("/upload", { replace: true });
+    if (user && window.location.pathname === '/') {
+      navigate("/home", { replace: true });
     }
   }, [user, navigate]);
 
@@ -19,12 +21,26 @@ const RoutesConfig = () => {
     <Routes>
       <Route path="/sign-in" element={<AuthPage />} />
       <Route
-        path="/upload"
+        path="/home"
         element={
           <SignedIn>
-            <button onClick={() => signOut()}>Sign Out</button>
-            <h2>Welcome {user?.firstName}!</h2>
+            <Home />
+          </SignedIn>
+        }
+      />
+      <Route
+        path="/upload-receipt"
+        element={
+          <SignedIn>
             <UploadReceipt />
+          </SignedIn>
+        }
+      />
+      <Route
+        path="/view-restaurant"
+        element={
+          <SignedIn>
+            <ViewSurcharges />
           </SignedIn>
         }
       />

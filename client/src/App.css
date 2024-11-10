@@ -1,8 +1,22 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  max-width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex;
   text-align: center;
+  justify-content: center; 
+}
+
+body{
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: #f4f6f8 !important;
 }
 
 .logo {

@@ -1,0 +1,37 @@
+.auth-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    height: 100vh;
+}
+
+h2{
+    margin-bottom: 10px;
+}
+
+.sign-up-btn{
+    background-color: #f4f6f8 !important;
+}
+
+.sign-up-btn{
+    width: auth !important;
+}
+
+.sign-up-btn:hover{
+    background-color: transparent;           
+    border: none;               
+    box-shadow: none;           
+    cursor: pointer;  
+}
+
+
+.sign-up-btn:focus {
+    outline: none;
+    border: none; 
+}
+
+.sign-up-btn:active {
+    outline: none;
+    border: none;
+}
