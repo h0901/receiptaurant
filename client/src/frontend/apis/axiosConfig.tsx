@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const backendApi = axios.create({
-  baseURL: "https://receiptaurant.onrender.com/api",
+  baseURL: "https://cs484-final-project.vercel.app/",
   headers: {
     "Content-Type": "application/json",
   },
