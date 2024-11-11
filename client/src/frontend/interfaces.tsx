@@ -10,7 +10,14 @@ export interface Receipt {
 }
 
 export interface Surcharge {
+  surcharge_id: number;
   surcharge_name: string | null;
   surcharge_value: string;
   surcharge_percentage?: string;
+}
+
+export interface Restaurant {
+  res_id: number;
+  Name: string;
+  location: string;
 }

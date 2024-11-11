@@ -6,7 +6,7 @@ const billRoutes = require('./routes/bill.js');
 const surchargeRoutes = require('./routes/surcharges.js');
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 const corsOptions = {
   origin: ["http://localhost:5173"]
 };
