@@ -8,7 +8,7 @@ const surchargeRoutes = require("./routes/surcharges.js");
 const app = express();
 const PORT = process.env.PORT || 8080;
 const corsOptions = {
-  origin: ["https://cs484-final-project.onrender.com"],
+  origin: ["https://receiptaurant.vercel.app/"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
