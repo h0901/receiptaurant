@@ -1,18 +1,27 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const restaurantRoutes = require("./api/restaurant.js");
-const billRoutes = require("./api/bill.js");
-const surchargeRoutes = require("./api/surcharges.js");
+const restaurantRoutes = require("./routes/restaurant.js");
+const billRoutes = require("./routes/bill.js");
+const surchargeRoutes = require("./routes/surcharges.js");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://cs484-final-project.vercel.app"],
+  origin: ["https://receiptaurant.vercel.app", "https://cs484-final-project.vercel.app"], 
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true, 
 };
 
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(bodyParser.json());
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the API");
+});
+
 
 app.use("/api/restaurant", restaurantRoutes);
 app.use("/api/bill", billRoutes);
