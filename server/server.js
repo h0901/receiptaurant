@@ -17,6 +17,11 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // Handle preflight requests
 app.use(bodyParser.json());
 
+app.get("/", (req, res) => {
+  res.send("Welcome to the API");
+});
+
+
 app.use("/api/restaurant", restaurantRoutes);
 app.use("/api/bill", billRoutes);
 app.use("/api/surcharge", surchargeRoutes);
