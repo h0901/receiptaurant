@@ -1,68 +1,122 @@
-  .header {
-    width: 100%;
-    padding: 20px;
-    background-color: #ffffff;
-    color: #333;
-    font-size: 1.8rem;
-    display: flex;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    color: #444;
-    margin-top: 30px;
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
-  
-  /* Restaurant cards */
-  .restaurant-cards {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-    max-width: 700px;
-  }
-  
-  .restaurant-card {
-    flex: 1 1 200px;
-    padding: 15px;
-    background-color: #fff;
-    color: #333;
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease;
-    cursor: pointer;
-  }
-  
-  .restaurant-card:hover {
-    transform: translateY(-5px);
-  }
-  
-  /* Surcharge section */
-  .surcharges-section {
-    margin-top: 30px;
-    padding: 20px;
-    max-width: 500px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-  
-  .surcharges-section h3 {
-    color: #444;
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-  }
-  
-  .surcharges-section li {
-    background-color: #f8f9fa;
-    margin: 8px 0;
-    padding: 10px;
-    border-radius: 4px;
-    color: #555;
-  }
-  
+.header {
+  width: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  color: #333;
+  font-size: 1.8rem;
+  display: flex;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #444;
+  margin-top: 30px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Restaurant cards */
+.restaurant-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+  max-width: 700px;
+}
+
+.restaurant-card {
+  flex: 1 1 200px;
+  padding: 15px;
+  background-color: #fff;
+  color: #333;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.restaurant-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Surcharge section */
+.surcharges-section {
+  margin-top: 30px;
+  padding: 20px;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.surcharges-section h3 {
+  color: #444;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+.surcharges-section li {
+  background-color: #f8f9fa;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 4px;
+  color: #555;
+}
+.search-bar-container {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.search-bar {
+  padding: 10px 15px;
+  width: 300px;
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background-color: #f8f9fa;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #007bff;
+  background-color: #ffffff;
+}
+
+.search-bar::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+.search-bar:hover,
+.search-bar:focus {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.surcharges-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #333;
+}

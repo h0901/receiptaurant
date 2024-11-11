@@ -3,8 +3,8 @@ import { analyze_receipt } from "../apis/analyzeReceipt";
 import { Receipt } from "../interfaces";
 import backendApi from "../apis/axiosConfig";
 import Header from "./Header";
-import '../styles/UploadReceipt.css'
-import Loader from './Loader';
+import "../styles/UploadReceipt.css";
+import Loader from "./Loader";
 
 const UploadReceipt = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -30,10 +30,19 @@ const UploadReceipt = () => {
         const response: Receipt = await analyze_receipt(image);
 
         response.surcharges = response.surcharges.map((surcharge) => {
-          if (!surcharge.surcharge_percentage && surcharge.surcharge_value && response.subtotal) {
+          if (
+            !surcharge.surcharge_percent &&
+            surcharge.surcharge_value &&
+            response.subtotal
+          ) {
             const subtotal = parseFloat(response.subtotal);
-            const surchargeAmount = parseFloat(surcharge.surcharge_value.replace(/,/g, ""));
-            surcharge.surcharge_percentage = subtotal > 0 ? ((surchargeAmount / subtotal) * 100).toFixed(2) + "%" : "0%";
+            const surchargeAmount = parseFloat(
+              surcharge.surcharge_value.replace(/,/g, "")
+            );
+            surcharge.surcharge_percent =
+              subtotal > 0
+                ? ((surchargeAmount / subtotal) * 100).toFixed(2) + "%"
+                : "0%";
           }
           return surcharge;
         });
@@ -45,9 +54,8 @@ const UploadReceipt = () => {
       } catch (error) {
         console.error("Error analyzing receipt:", error);
         setError("Error analyzing receipt. Please try again.");
-      }
-      finally {
-        setLoading(false); 
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -83,8 +91,8 @@ const UploadReceipt = () => {
       if (data.surcharges && Array.isArray(data.surcharges)) {
         for (const surcharge of data.surcharges) {
           const surchargeName = surcharge["surcharge_name"];
-          let surchargePercent = surcharge["surcharge_percentage"]
-            ? parseFloat(surcharge["surcharge_percentage"].replace("%", ""))
+          let surchargePercent = surcharge["surcharge_percent"]
+            ? parseFloat(surcharge["surcharge_percent"].replace("%", ""))
             : 0;
           const surchargeAmount = surcharge["surcharge_value"]
             ? parseFloat(surcharge["surcharge_value"].replace(/,/g, ""))
@@ -92,7 +100,8 @@ const UploadReceipt = () => {
 
           if (surchargePercent == 0 && surchargeAmount > 0 && data.subtotal) {
             const subtotal = parseFloat(data.subtotal);
-            surchargePercent = subtotal > 0 ? (surchargeAmount / subtotal) * 100 : 0;
+            surchargePercent =
+              subtotal > 0 ? (surchargeAmount / subtotal) * 100 : 0;
           }
 
           await backendApi.post("/surcharge", {
@@ -118,13 +127,19 @@ const UploadReceipt = () => {
       <div className="page-container">
         <h2 className="page-heading">Upload Receipt</h2>
         <input type="file" accept="image/*" onChange={handleFileChange} />
-        <button onClick={handleUpload} className="upload-btn">Upload</button>
+        <button onClick={handleUpload} className="upload-btn">
+          Upload
+        </button>
         {error && <p style={{ color: "red" }}>{error}</p>}
-        {loading && <Loader />} 
+        {loading && <Loader />}
         {!loading && responseData && (
           <div className="response-data">
-            <div className="response-item">Restaurant: {responseData.restaurant_name}</div>
-            <div className="response-item">Subtotal: {responseData.subtotal}</div>
+            <div className="response-item">
+              Restaurant: {responseData.restaurant_name}
+            </div>
+            <div className="response-item">
+              Subtotal: {responseData.subtotal}
+            </div>
             <div className="response-item">Total: {responseData.total}</div>
             <div className="response-item">Date: {responseData.date}</div>
             <div className="response-item">Taxes: {responseData.taxes}</div>
@@ -134,9 +149,15 @@ const UploadReceipt = () => {
                 responseData.surcharges.length > 0 &&
                 responseData.surcharges.map((s, index) => (
                   <div key={index} className="surcharge-item">
-                    <span className="surcharge-name">{s["surcharge_name"]} | </span>
-                    <span className="surcharge-value">Value: {s["surcharge_value"]} | </span>
-                    <span className="surcharge-percent">Percentage: {s["surcharge_percentage"]}</span>
+                    <span className="surcharge-name">
+                      {s["surcharge_name"]} |{" "}
+                    </span>
+                    <span className="surcharge-value">
+                      Value: {s["surcharge_value"]} |{" "}
+                    </span>
+                    <span className="surcharge-percent">
+                      Percentage: {s["surcharge_percent"]}
+                    </span>
                   </div>
                 ))}
             </div>

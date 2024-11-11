@@ -10,10 +10,11 @@ export interface Receipt {
 }
 
 export interface Surcharge {
-  surcharge_id: number;
+  sur_id: number;
   surcharge_name: string | null;
   surcharge_value: string;
-  surcharge_percentage?: string;
+  surcharge_percent?: string;
+  bill_date: string;
 }
 
 export interface Restaurant {

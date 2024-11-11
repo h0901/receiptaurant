@@ -5,11 +5,13 @@ const AuthPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
 
   return (
-    <div className= "auth-container">
+    <div className="auth-container">
       <h2>{isSignUp ? "Sign Up" : "Sign In"}</h2>
       {isSignUp ? <SignUp /> : <SignIn />}
-      {isSignUp ? "Already have an account?" : "Don't have an account?"}
-      <button className="sign-up-btn" onClick={() => setIsSignUp(!isSignUp)}>
+      <div style={{ paddingTop: "5px", color: "#34495e" }}>
+        {isSignUp ? "Already have an account?" : "Don't have an account?"}
+      </div>
+      <button className="sign-in-button" onClick={() => setIsSignUp(!isSignUp)}>
         {isSignUp ? "Sign In" : "Sign Up"}
       </button>
     </div>
