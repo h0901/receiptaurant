@@ -8,10 +8,13 @@ const surchargeRoutes = require("./routes/surcharges.js");
 const app = express();
 const PORT = process.env.PORT || 8080;
 const corsOptions = {
-  origin: ["https://cs484-final-project.onrender.com"]
+  origin: ["https://cs484-final-project.onrender.com"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle preflight requests
 app.use(bodyParser.json());
 
 app.use("/api/restaurant", restaurantRoutes);
@@ -19,5 +22,6 @@ app.use("/api/bill", billRoutes);
 app.use("/api/surcharge", surchargeRoutes);
 
 app.listen(PORT, () => {
-   console.log(`Server is running on http://localhost:${PORT}`);
- });
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+
