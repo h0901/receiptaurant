@@ -1,97 +1,98 @@
 .page-container {
-    background-color: #f4f6f8;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    padding: 40px;
-    width: 100%;
-    max-width: 600px;
-    text-align: center;
-    margin-top: 100px;
-    margin-bottom: 20px;
+  background-color: #f9f4e9;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  margin-top: 100px;
+  margin-bottom: 20px;
 }
 
 .upload-btn {
-    background-color: #2980b9;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    width: 100%;
-    transition: transform 0.3s ease;
+  background-color: #6f4f37;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: transform 0.3s ease;
 }
 
-.upload-btn:hover,  .upload-btn:active, .upload-btn:focus{
-    transform: scale(1);
-    background-color: #2980b9;
-    border: 2px solid #2980b9;
+.upload-btn:hover,
+.upload-btn:active,
+.upload-btn:focus {
+  transform: scale(1);
+  background-color: #6f4f37;
+  border: 2px solid #6f4f37;
 }
 
 input[type="file"] {
-    margin-bottom: 20px;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 5px;
-    width: 100%;
-    border: 2px solid #2980b9;
+  margin-bottom: 20px;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  width: 100%;
+  border: 2px solid #6f4f37;
 }
 
 .response-data {
-    margin-top: 30px;
-    background-color: #f4f6f8;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+  background-color: #f9f4e9;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .response-item {
-    font-size: 16px;
-    margin: 10px 0;
-    font-weight: 500;
-    color: #333;
+  font-size: 16px;
+  margin: 10px 0;
+  font-weight: 500;
+  color: #6f4f37;
 }
 
-
 .surcharges-section {
-    margin-top: 30px;
-    border-top: 3px solid #2980b9;
-    padding-top: 20px;
+  margin-top: 30px;
+  border-top: 3px solid #6f4f37;
+  padding-top: 20px;
 }
 
 .surcharges-title {
-    font-size: 22px;
-    color: #2980b9;
-    font-weight: 700;
-    margin-bottom: 20px;
+  font-size: 22px;
+  color: #6f4f37;
+  font-weight: 700;
+  margin-bottom: 20px;
 }
 
 .surcharge-item {
-    background-color: #ffffff;
-    padding: 18px;
-    margin: 15px 0;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, background-color 0.3s ease;
+  background-color: #ffffff;
+  padding: 18px;
+  margin: 15px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .surcharge-item:hover {
-    transform: translateY(-5px);
-    background-color: #f1f1f1;
+  transform: translateY(-5px);
+  background-color: #f4e6d1;
 }
 
 .surcharge-name {
-    font-size: 20px;
-    font-weight: bold;
-    color: #007bff;
+  font-size: 20px;
+  font-weight: bold;
+  color: #6f4f37;
 }
 
 .surcharge-value {
-    font-size: 16px;
-    color: #28a745;
+  font-size: 16px;
+  color: #28a745;
 }
 
 .surcharge-percent {
-    font-size: 16px;
-    color: #dc3545;
+  font-size: 16px;
+  color: #dc3545;
 }

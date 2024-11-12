@@ -8,10 +8,10 @@ const AuthPage = () => {
     <div className="auth-container">
       <h2>{isSignUp ? "Sign Up" : "Sign In"}</h2>
       {isSignUp ? <SignUp /> : <SignIn />}
-      <div style={{ paddingTop: "5px", color: "#34495e" }}>
+      <div className="switch-text">
         {isSignUp ? "Already have an account?" : "Don't have an account?"}
       </div>
-      <button className="sign-in-button" onClick={() => setIsSignUp(!isSignUp)}>
+      <button className="switch-button" onClick={() => setIsSignUp(!isSignUp)}>
         {isSignUp ? "Sign In" : "Sign Up"}
       </button>
     </div>

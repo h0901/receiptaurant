@@ -1,5 +1,6 @@
 import { useClerk } from "@clerk/clerk-react";
 import React from "react";
+import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 import "../styles/Home.css";
 
 const Header: React.FC = () => {
@@ -13,8 +14,10 @@ const Header: React.FC = () => {
           </a>
         </h1>
         <div className="user-profile">
-          <span className="user-name"> Welcome {user?.firstName}!</span>
+          <FaUserCircle style={{ fontSize: "2rem", marginRight: "10px" }} />
+          <span className="user-name">Welcome, {user?.firstName}!</span>
           <button className="sign-out-button" onClick={() => signOut()}>
+            <FaSignOutAlt style={{ marginRight: "8px" }} />
             Sign Out
           </button>
         </div>

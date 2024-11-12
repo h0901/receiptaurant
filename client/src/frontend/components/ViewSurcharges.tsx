@@ -76,17 +76,13 @@ const ViewSurcharges: React.FC = () => {
     setSurcharges([]);
   };
 
-  const handleBack = () => {
-    setSelectedRestaurantId(null);
-    setSelectedRestaurantName("");
-    setSurcharges([]);
-  };
-
   return (
     <div className="home-container">
       <Header />
       <div style={{ marginTop: "50px" }}>
-        <h2>Restaurants</h2>
+        <div className="restaurants-header">
+          <h2>Restaurants</h2>
+        </div>
 
         <div className="search-bar-container">
           <input
@@ -116,8 +112,11 @@ const ViewSurcharges: React.FC = () => {
           <div className="surcharges-section">
             <div className="surcharges-header">
               <h3>Surcharges for {selectedRestaurantName}</h3>
-              <button className="close-btn" onClick={handleCloseSurcharges}>
-                X
+              <button
+                style={{ backgroundColor: "#6f4f37" }}
+                onClick={handleCloseSurcharges}
+              >
+                x
               </button>
             </div>
             {surcharges.length > 0 ? (
