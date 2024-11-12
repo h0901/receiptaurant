@@ -1,22 +1,26 @@
-/* CSS */
 .auth-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
   text-align: center;
   padding: 20px;
-  color: #5c4033; /* Dark Brown */
-  background: linear-gradient(135deg, #f3e5d8, #f8f1e7); /* Light Cream */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+  color: #5c4033;
+  background: linear-gradient(
+      135deg,
+      rgba(243, 229, 216, 0.8),
+      rgba(248, 241, 231, 0.8)
+    ),
+    url("https://png.pngtree.com/background/20230519/original/pngtree-an-interior-area-of-an-empty-cafe-in-the-area-picture-image_2652948.jpg")
+      center/cover no-repeat;
 }
 
 h2 {
   margin-bottom: 20px;
   font-size: 24px;
-  color: #5c4033; /* Dark Brown */
+  color: #5c4033;
   font-weight: bold;
 }
 

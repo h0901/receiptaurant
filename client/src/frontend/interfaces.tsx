@@ -22,3 +22,7 @@ export interface Restaurant {
   Name: string;
   location: string;
 }
+
+export interface LoaderText {
+  text: string
+}

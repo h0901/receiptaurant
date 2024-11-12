@@ -4,9 +4,11 @@ import { Surcharge } from "../interfaces";
 import { Restaurant } from "../interfaces";
 import Header from "./Header";
 import "../styles/ViewSurcharges.css";
+import Loader from "./Loader";
 
 const ViewSurcharges: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(
     []
   );
@@ -35,6 +37,8 @@ const ViewSurcharges: React.FC = () => {
         );
         setFilteredRestaurants(restaurantData);
         console.log("Fetched Restaurants:", restaurantData);
+        setLoading(false);
+        console.log(loading);
       } catch (error) {
         console.error("Error fetching restaurants:", error);
       }
@@ -83,55 +87,61 @@ const ViewSurcharges: React.FC = () => {
         <div className="restaurants-header">
           <h2>Restaurants</h2>
         </div>
-
-        <div className="search-bar-container">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            placeholder="Search restaurants by name..."
-            className="search-bar"
-          />
-        </div>
-
-        <div className="restaurant-cards">
-          {filteredRestaurants.map((restaurant) => (
-            <div
-              key={restaurant.res_id}
-              className="restaurant-card"
-              onClick={() =>
-                handleCardClick(restaurant.res_id, restaurant.Name)
-              }
-            >
-              {restaurant.Name}
+        {!loading ? (
+          <div>
+            <div className="search-bar-container">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                placeholder="Search restaurants by name..."
+                className="search-bar"
+              />
             </div>
-          ))}
-        </div>
 
-        {selectedRestaurantId && (
-          <div className="surcharges-section">
-            <div className="surcharges-header">
-              <h3>Surcharges for {selectedRestaurantName}</h3>
-              <button
-                style={{ backgroundColor: "#6f4f37" }}
-                onClick={handleCloseSurcharges}
-              >
-                x
-              </button>
+            <div className="restaurant-cards">
+              {filteredRestaurants.map((restaurant) => (
+                <div
+                  key={restaurant.res_id}
+                  className="restaurant-card"
+                  onClick={() =>
+                    handleCardClick(restaurant.res_id, restaurant.Name)
+                  }
+                >
+                  {restaurant.Name}
+                </div>
+              ))}
             </div>
-            {surcharges.length > 0 ? (
-              <ul>
-                {surcharges.map((surcharge) => (
-                  <li key={surcharge.sur_id}>
-                    {surcharge.surcharge_name}: {surcharge.surcharge_percent}%
-                    on {new Date(surcharge.bill_date).toLocaleString()}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No surcharges available.</p>
+
+            {selectedRestaurantId && (
+              <div className="surcharges-section">
+                <div className="surcharges-header">
+                  <h3>Surcharges for {selectedRestaurantName}</h3>
+                  <button
+                    style={{ backgroundColor: "#6f4f37" }}
+                    onClick={handleCloseSurcharges}
+                  >
+                    x
+                  </button>
+                </div>
+                {surcharges.length > 0 ? (
+                  <ul>
+                    {surcharges.map((surcharge) => (
+                      <li key={surcharge.sur_id}>
+                        {surcharge.surcharge_name}:{" "}
+                        {surcharge.surcharge_percent}% on{" "}
+                        {new Date(surcharge.bill_date).toLocaleString()}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No surcharges available.</p>
+                )}
+              </div>
             )}
           </div>
+        ) : (
+          <Loader text="Fetching restaurants..." />
         )}
       </div>
     </div>
