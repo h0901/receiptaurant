@@ -9,14 +9,14 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
-  origin: ["https://receiptaurant.vercel.app", "https://cs484-final-project.vercel.app"], 
+  origin: [
+    "https://receiptaurant-delta.vercel.app",
+    "https://receiptaurant-server.vercel.app/",
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, 
+  credentials: true,
 };
-/*const corsOptions = {
-  origin: ["http://localhost:5173"]
-};*/
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
@@ -25,7 +25,6 @@ app.use(bodyParser.json());
 app.get("/", (req, res) => {
   res.send("Welcome to the API");
 });
-
 
 app.use("/api/restaurant", restaurantRoutes);
 app.use("/api/bill", billRoutes);

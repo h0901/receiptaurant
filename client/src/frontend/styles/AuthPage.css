@@ -1,37 +1,60 @@
-.auth-container{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    height: 100vh;
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  padding: 20px;
+  color: #5c4033;
+  background: linear-gradient(
+      135deg,
+      rgba(243, 229, 216, 0.8),
+      rgba(248, 241, 231, 0.8)
+    ),
+    url("https://png.pngtree.com/background/20230519/original/pngtree-an-interior-area-of-an-empty-cafe-in-the-area-picture-image_2652948.jpg")
+      center/cover no-repeat;
 }
 
-h2{
-    margin-bottom: 10px;
+h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #5c4033;
+  font-weight: bold;
 }
 
-.sign-up-btn{
-    background-color: #f4f6f8 !important;
+.switch-text {
+  padding-top: 10px;
+  font-size: 14px;
+  color: #8c6e63; /* Medium Brown */
 }
 
-.sign-up-btn{
-    width: auth !important;
+.switch-button {
+  margin-top: 15px;
+  background-color: #d2b48c; /* Tan */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.sign-up-btn:hover{
-    background-color: transparent;           
-    border: none;               
-    box-shadow: none;           
-    cursor: pointer;  
+.switch-button:hover {
+  background-color: #a67d5a; /* Warm Brown */
+  transform: translateY(-2px);
 }
 
-
-.sign-up-btn:focus {
-    outline: none;
-    border: none; 
+.switch-button:focus,
+.switch-button:active {
+  outline: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.sign-up-btn:active {
-    outline: none;
-    border: none;
+.switch-button:active {
+  transform: translateY(0);
 }
