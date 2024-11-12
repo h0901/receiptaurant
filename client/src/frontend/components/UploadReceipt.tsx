@@ -145,8 +145,7 @@ const UploadReceipt = () => {
             <div className="response-item">Taxes: {responseData.taxes}</div>
             <div className="surcharges-section">
               <h4 className="surcharges-title">Surcharges</h4>
-              {responseData.surcharges &&
-                responseData.surcharges.length > 0 &&
+              {responseData.surcharges && responseData.surcharges.length > 0 ? (
                 responseData.surcharges.map((s, index) => (
                   <div key={index} className="surcharge-item">
                     <span className="surcharge-name">
@@ -159,7 +158,10 @@ const UploadReceipt = () => {
                       Percentage: {s["surcharge_percent"]}
                     </span>
                   </div>
-                ))}
+                ))
+              ) : (
+                <h4>No surcharges available.</h4>
+              )}
             </div>
           </div>
         )}
