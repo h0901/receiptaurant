@@ -16,6 +16,42 @@ const UploadReceipt = () => {
     setSelectedFile(event.target.files?.[0] || null);
   };
 
+  const parseDate = (date: string): string | null => {
+    // Match against known date formats
+    const patterns = [
+      { regex: /^(\d{2})\/(\d{2})\/(\d{4})$/, format: "MM/DD/YYYY" },
+      { regex: /^(\d{2})\/(\d{2})\/(\d{2})$/, format: "YY/MM/DD" },
+      { regex: /^(\d{4})\/(\d{2})\/(\d{2})$/, format: "YYYY/MM/DD" },
+      { regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, format: "M/D/YYYY" },
+      { regex: /^(\d{1,2})\/(\d{1,2})\/(\d{2})$/, format: "YY/M/D" },
+      { regex: /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/, format: "YYYY/M/D" },
+    ];
+
+    for (const { regex, format } of patterns) {
+      const match = date.match(regex);
+      if (match) {
+        const [, part1, part2, part3] = match; 
+        switch (format) {
+          case "MM/DD/YYYY":
+            return `20${part3}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;
+          case "YY/MM/DD":
+            return `20${part1}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
+          case "YYYY/MM/DD":
+            return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
+          case "M/D/YYYY":
+            return `${part3}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;
+          case "YY/M/D":
+            return `20${part1.padStart(2, "0")}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
+          case "YYYY/M/D":
+            return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
+          default:
+            return null;
+        }
+      }
+    }
+    return null;
+  };
+
   const handleUpload = async () => {
     if (!selectedFile) return;
 
@@ -68,11 +104,13 @@ const UploadReceipt = () => {
       return;
     }
 
-    const [month, day, year] = data.date.split("/");
-    const formattedDate = `20${year}-${month.padStart(2, "0")}-${day.padStart(
-      2,
-      "0"
-    )}`;
+    const formattedDate = parseDate(data.date);
+    if (!formattedDate) {
+      setError("Invalid date format.");
+      return;
+    }
+
+    console.log("Parsed Date:", formattedDate);
 
     try {
       const restaurantResponse = await backendApi.post("/restaurant", {

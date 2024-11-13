@@ -12,9 +12,7 @@ const ViewSurcharges: React.FC = () => {
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(
     []
   );
-  const [selectedRestaurantId, setSelectedRestaurantId] = useState<
-    number | null
-  >(null);
+  //const [selectedRestaurantId, setSelectedRestaurantId] = useState<number | null>(null);
   const [selectedRestaurantName, setSelectedRestaurantName] =
     useState<string>("");
   const [surcharges, setSurcharges] = useState<Surcharge[]>([]);
@@ -58,27 +56,31 @@ const ViewSurcharges: React.FC = () => {
     }
   }, [searchQuery, restaurants]);
 
-  const handleCardClick = async (res_id: number, name: string) => {
-    setSelectedRestaurantName(name);
-    console.log("Selected Restaurant ID:", res_id);
-    setSelectedRestaurantId(res_id);
+  const handleCardClick = async (name: string) => {
+    setSelectedRestaurantName(name); 
     try {
-      const response = await backendApi.get(`/restaurant/${res_id}/surcharges`);
-      setSurcharges(response.data[0]);
+      const encodedName = encodeURIComponent(name);
+      const response = await backendApi.get(`/restaurant/${encodedName}/bills`);
+      const surchargeData = response.data[0];
+      setSurcharges(surchargeData);
+      console.log("Fetched Surcharges:", response.data);
     } catch (error) {
-      console.error("Error fetching surcharges:", error);
+      console.error("Error fetching bills and surcharges:", error);
     }
   };
+  
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
 
   const handleCloseSurcharges = () => {
-    setSelectedRestaurantId(null);
+    //setSelectedRestaurantId(null);
     setSelectedRestaurantName("");
     setSurcharges([]);
   };
+
+ 
 
   return (
     <div className="home-container">
@@ -105,7 +107,7 @@ const ViewSurcharges: React.FC = () => {
                   key={restaurant.res_id}
                   className="restaurant-card"
                   onClick={() =>
-                    handleCardClick(restaurant.res_id, restaurant.Name)
+                    handleCardClick(restaurant.Name)
                   }
                 >
                   {restaurant.Name}
@@ -113,7 +115,7 @@ const ViewSurcharges: React.FC = () => {
               ))}
             </div>
 
-            {selectedRestaurantId && (
+            {selectedRestaurantName && surcharges.length > 0 && (
               <div className="surcharges-section">
                 <div className="surcharges-header">
                   <h3>Surcharges for {selectedRestaurantName}</h3>
@@ -125,15 +127,18 @@ const ViewSurcharges: React.FC = () => {
                   </button>
                 </div>
                 {surcharges.length > 0 ? (
-                  <ul>
-                    {surcharges.map((surcharge) => (
-                      <li key={surcharge.sur_id}>
-                        {surcharge.surcharge_name}:{" "}
-                        {surcharge.surcharge_percent}% on{" "}
-                        {new Date(surcharge.bill_date).toLocaleString()}
-                      </li>
-                    ))}
-                  </ul>
+                  <ul className="surchargeList">
+                  {surcharges.map((surcharge, index) => (
+                    <li key={surcharge.sur_id || index} className="surchargeItem">
+                      <div className="surchargeName">{surcharge.surcharge_name || "Unknown Surcharge"}</div>
+                      <div className="surchargeDetails">
+                        <span className="surchargePercent">{surcharge.surcharge_percent || "N/A"}%</span>
+                        <span className="surchargeValue">Value: {surcharge.surcharge_amount || "N/A"}</span>
+                        <span className="surchargeDate">Date: {surcharge.Bill_Date ? new Date(surcharge.Bill_Date).toLocaleDateString() : "N/A"}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>                              
                 ) : (
                   <p>No surcharges available.</p>
                 )}

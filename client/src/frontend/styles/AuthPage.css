@@ -18,7 +18,8 @@
 }
 
 h2 {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  margin-top: 10px;
   font-size: 24px;
   color: #5c4033;
   font-weight: bold;
@@ -32,7 +33,7 @@ h2 {
 
 .switch-button {
   margin-top: 15px;
-  background-color: #d2b48c; /* Tan */
+  background-color: #5c4033; /* Tan */
   color: #fff;
   border: none;
   padding: 10px 20px;

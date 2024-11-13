@@ -39,28 +39,25 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:res_id/surcharges", async (req, res) => {
-  const { res_id } = req.params;
-  console.log(res_id);
-  console.log(`Received GET request at /api/restaurant/${res_id}/surcharges`);
+router.get('/:name/bills', async (req, res) => {
+  const restaurantName = decodeURIComponent(req.params.name);
+
+  const query = `
+      SELECT b.Bill_Date, s.surcharge_name, s.surcharge_percent, s.surcharge_amount
+      FROM Restaurant r
+      JOIN Bill b ON r.Restaurant_ID = b.Restaurant_ID
+      JOIN Surcharges s ON b.ID = s.bill_id
+      WHERE r.Name = ?
+  `;
 
   try {
-    const query = `
-      SELECT s.sur_id, s.surcharge_name, s.surcharge_percent, s.surcharge_amount, b.bill_date
-      FROM Surcharges s
-      LEFT JOIN Bill b ON s.bill_id = b.id
-      WHERE s.res_id = ?`;
-
-    const surcharges = await db.query(query, [res_id]);
-    console.log("Database query result:", surcharges);
-
-    res.json(surcharges);
+      const results = await db.query(query, [restaurantName]);
+      res.json(results);
   } catch (error) {
-    console.error("Error fetching surcharges:", error);
-    res
-      .status(500)
-      .json({ error: "Error fetching surcharges", details: error.message });
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 module.exports = router;

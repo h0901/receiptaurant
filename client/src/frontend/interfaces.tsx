@@ -14,7 +14,8 @@ export interface Surcharge {
   surcharge_name: string | null;
   surcharge_value: string;
   surcharge_percent?: string;
-  bill_date: string;
+  Bill_Date: string;
+  surcharge_amount: string;
 }
 
 export interface Restaurant {
