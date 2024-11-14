@@ -1,15 +1,22 @@
 import { useClerk } from "@clerk/clerk-react";
 import React from "react";
-import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
+import { FaUserCircle, FaSignOutAlt, FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
 
 const Header: React.FC = () => {
   const { user, signOut } = useClerk();
+  const navigate = useNavigate();
+
   return (
     <div className="nav-container">
       <header className="navbar">
+        <button className="sign-out-button" onClick={() => navigate(-1)}>
+          <FaArrowLeft style={{ marginRight: "8px" }} />
+          Back
+        </button>
         <h1 className="app-title">
-          <a href="/" style={{ color: "white" }}>
+          <a href="/" style={{ color: "white", marginLeft: "-65vh" }}>
             Receiptaurant
           </a>
         </h1>
