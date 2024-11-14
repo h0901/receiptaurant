@@ -155,7 +155,7 @@ const ViewSurcharges: React.FC = () => {
               ))}
             </div>
 
-            {selectedRestaurantName && surcharges.length > 0 && (
+            {selectedRestaurantName && (
               <div className="surcharges-section">
                 <div className="surcharges-header">
                   <h3>Surcharges for {selectedRestaurantName}</h3>
@@ -166,6 +166,7 @@ const ViewSurcharges: React.FC = () => {
                     x
                   </button>
                 </div>
+
                 {surcharges.length > 0 ? (
                   <ul className="surchargeList">
                     {surcharges.map((surcharge, index) => (
