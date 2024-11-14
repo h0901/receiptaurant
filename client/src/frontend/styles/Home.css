@@ -37,7 +37,7 @@
   text-align: center;
   margin-top: 120px;
   padding: 0 20px;
-  animation: fadeIn 1.5s ease-in-out;
+  animation: fadeIn 1s ease-in-out;
 }
 
 .description {
@@ -101,7 +101,7 @@ h2 {
 @keyframes fadeIn {
   0% {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-20px);
   }
   100% {
     opacity: 1;
