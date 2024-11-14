@@ -16,7 +16,7 @@ const Header: React.FC = () => {
           Back
         </button>
         <h1 className="app-title">
-          <a href="/" style={{ color: "white", marginLeft: "-65vh" }}>
+          <a href="/" style={{ color: "white", marginLeft: "-55vh" }}>
             Receiptaurant
           </a>
         </h1>
