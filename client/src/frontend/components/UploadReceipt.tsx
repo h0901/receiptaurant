@@ -13,6 +13,7 @@ const UploadReceipt = () => {
   const [responseData, setResponseData] = useState<Receipt | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [successfullUpload, setSuccessfullUpload] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -21,9 +22,9 @@ const UploadReceipt = () => {
   };
 
   const parseDate = (date: string): string | null => {
-    // Match against known date formats
     const patterns = [
       { regex: /^(\d{2})\/(\d{2})\/(\d{4})$/, format: "MM/DD/YYYY" },
+      { regex: /^(\d{2})\/(\d{2})\/(\d{2})$/, format: "MM/DD/YY" },
       { regex: /^(\d{2})\/(\d{2})\/(\d{2})$/, format: "YY/MM/DD" },
       { regex: /^(\d{4})\/(\d{2})\/(\d{2})$/, format: "YYYY/MM/DD" },
       { regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, format: "M/D/YYYY" },
@@ -37,15 +38,16 @@ const UploadReceipt = () => {
         const [, part1, part2, part3] = match;
         switch (format) {
           case "MM/DD/YYYY":
-            return `20${part3}-${part1.padStart(2, "0")}-${part2.padStart(
+            return `${part3}-${part1.padStart(2, "0")}-${part2.padStart(
               2,
               "0"
             )}`;
+          case "MM/DD/YY":
+            {const yearMMDDYY = parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
+            return `${yearMMDDYY}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;}
           case "YY/MM/DD":
-            return `20${part1}-${part2.padStart(2, "0")}-${part3.padStart(
-              2,
-              "0"
-            )}`;
+            {const yearYYMMDD = parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
+            return `${yearYYMMDD}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;}
           case "YYYY/MM/DD":
             return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(
               2,
@@ -57,10 +59,8 @@ const UploadReceipt = () => {
               "0"
             )}`;
           case "YY/M/D":
-            return `20${part1.padStart(2, "0")}-${part2.padStart(
-              2,
-              "0"
-            )}-${part3.padStart(2, "0")}`;
+            {const yearYYMD = parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
+            return `${yearYYMD}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;}
           case "YYYY/M/D":
             return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(
               2,
@@ -171,7 +171,7 @@ const UploadReceipt = () => {
           });
         }
       }
-
+      setSuccessfullUpload(true)
       //console.log("Data saved to the backend successfully.");
     } catch (error) {
       console.error("Error sending data to the backend:", error);
@@ -193,6 +193,7 @@ const UploadReceipt = () => {
           Upload
         </button>
         {error && <p style={{ color: "red" }}>{error}</p>}
+        {successfullUpload && <p style={{ color: "green", marginTop: '10px' }}>Receipt uploaded successfully!</p>}
         {loading && <Loader text="Analyzing your receipt..." />}
         {!loading && responseData && (
           <div className="response-data">
