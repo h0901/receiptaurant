@@ -188,7 +188,29 @@ li span {
   gap: 4px;
 }
 
-.surchargePercent, .surchargeValue, .surchargeDate {
+.surchargePercent,
+.surchargeValue,
+.surchargeDate {
   font-size: 0.9em;
   color: #555;
+}
+
+.restaurant-card.no-surcharge {
+  background-color: #d4edda;
+}
+
+.restaurant-card.low-surcharge {
+  background-color: #fff3cd;
+}
+
+.restaurant-card.high-surcharge {
+  background-color: #f8d7da;
+}
+
+.surcharge-label {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: inline-block;
 }

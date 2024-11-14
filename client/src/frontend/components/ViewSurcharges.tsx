@@ -12,18 +12,20 @@ const ViewSurcharges: React.FC = () => {
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(
     []
   );
-  //const [selectedRestaurantId, setSelectedRestaurantId] = useState<number | null>(null);
   const [selectedRestaurantName, setSelectedRestaurantName] =
     useState<string>("");
   const [surcharges, setSurcharges] = useState<Surcharge[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const [surchargeStatus, setSurchargeStatus] = useState<{
+    [key: number]: string;
+  }>({});
 
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
         const response = await backendApi.get("/restaurant");
         const restaurantData = response.data;
-        console.log(restaurantData);
 
         setRestaurants(
           restaurantData.map(
@@ -34,13 +36,55 @@ const ViewSurcharges: React.FC = () => {
           )
         );
         setFilteredRestaurants(restaurantData);
-        console.log("Fetched Restaurants:", restaurantData);
         setLoading(false);
-        console.log(loading);
+
+        fetchSurchargeStatus(restaurantData);
       } catch (error) {
         console.error("Error fetching restaurants:", error);
       }
     };
+
+    const fetchSurchargeStatus = async (restaurants: Restaurant[]) => {
+      const status: { [key: number]: string } = {};
+
+      for (const restaurant of restaurants) {
+        try {
+          const response = await backendApi.get(
+            `/restaurant/${encodeURIComponent(restaurant.Name)}/bills`
+          );
+          const surchargeData = response.data[0];
+
+          if (!surchargeData || surchargeData.length === 0) {
+            status[restaurant.res_id] = "no-surcharge";
+          } else {
+            const totalSurchargePercent = surchargeData.reduce(
+              (acc: number, surcharge: Surcharge) =>
+                acc +
+                (typeof surcharge.surcharge_percent === "number"
+                  ? surcharge.surcharge_percent
+                  : Number(surcharge.surcharge_percent) || 0),
+              0
+            );
+
+            const avgSurchargePercent =
+              surchargeData.length > 0
+                ? totalSurchargePercent / surchargeData.length
+                : 0;
+
+            status[restaurant.res_id] =
+              avgSurchargePercent < 3.5 ? "low-surcharge" : "high-surcharge";
+          }
+        } catch (error) {
+          console.error(
+            `Error fetching surcharges for ${restaurant.Name}:`,
+            error
+          );
+          status[restaurant.res_id] = "no-surcharge";
+        }
+      }
+      setSurchargeStatus(status);
+    };
+
     fetchRestaurants();
   }, []);
 
@@ -57,30 +101,26 @@ const ViewSurcharges: React.FC = () => {
   }, [searchQuery, restaurants]);
 
   const handleCardClick = async (name: string) => {
-    setSelectedRestaurantName(name); 
+    setSelectedRestaurantName(name);
     try {
-      const encodedName = encodeURIComponent(name);
-      const response = await backendApi.get(`/restaurant/${encodedName}/bills`);
+      const response = await backendApi.get(
+        `/restaurant/${encodeURIComponent(name)}/bills`
+      );
       const surchargeData = response.data[0];
       setSurcharges(surchargeData);
-      console.log("Fetched Surcharges:", response.data);
     } catch (error) {
       console.error("Error fetching bills and surcharges:", error);
     }
   };
-  
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
 
   const handleCloseSurcharges = () => {
-    //setSelectedRestaurantId(null);
     setSelectedRestaurantName("");
     setSurcharges([]);
   };
-
- 
 
   return (
     <div className="home-container">
@@ -105,10 +145,10 @@ const ViewSurcharges: React.FC = () => {
               {filteredRestaurants.map((restaurant) => (
                 <div
                   key={restaurant.res_id}
-                  className="restaurant-card"
-                  onClick={() =>
-                    handleCardClick(restaurant.Name)
-                  }
+                  className={`restaurant-card ${
+                    surchargeStatus[restaurant.res_id]
+                  }`}
+                  onClick={() => handleCardClick(restaurant.Name)}
                 >
                   {restaurant.Name}
                 </div>
@@ -128,17 +168,33 @@ const ViewSurcharges: React.FC = () => {
                 </div>
                 {surcharges.length > 0 ? (
                   <ul className="surchargeList">
-                  {surcharges.map((surcharge, index) => (
-                    <li key={surcharge.sur_id || index} className="surchargeItem">
-                      <div className="surchargeName">{surcharge.surcharge_name || "Unknown Surcharge"}</div>
-                      <div className="surchargeDetails">
-                        <span className="surchargePercent">{surcharge.surcharge_percent || "N/A"}%</span>
-                        <span className="surchargeValue">Value: {surcharge.surcharge_amount || "N/A"}</span>
-                        <span className="surchargeDate">Date: {surcharge.Bill_Date ? new Date(surcharge.Bill_Date).toLocaleDateString() : "N/A"}</span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>                              
+                    {surcharges.map((surcharge, index) => (
+                      <li
+                        key={surcharge.sur_id || index}
+                        className="surchargeItem"
+                      >
+                        <div className="surchargeName">
+                          {surcharge.surcharge_name || "Unknown Surcharge"}
+                        </div>
+                        <div className="surchargeDetails">
+                          <span className="surchargePercent">
+                            {surcharge.surcharge_percent || "N/A"}%
+                          </span>
+                          <span className="surchargeValue">
+                            Value: {surcharge.surcharge_amount || "N/A"}
+                          </span>
+                          <span className="surchargeDate">
+                            Date:{" "}
+                            {surcharge.Bill_Date
+                              ? new Date(
+                                  surcharge.Bill_Date
+                                ).toLocaleDateString()
+                              : "N/A"}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 ) : (
                   <p>No surcharges available.</p>
                 )}
