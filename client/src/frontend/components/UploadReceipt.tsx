@@ -5,12 +5,16 @@ import backendApi from "../apis/axiosConfig";
 import Header from "./Header";
 import "../styles/UploadReceipt.css";
 import Loader from "./Loader";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const UploadReceipt = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [responseData, setResponseData] = useState<Receipt | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFile(event.target.files?.[0] || null);
@@ -30,20 +34,38 @@ const UploadReceipt = () => {
     for (const { regex, format } of patterns) {
       const match = date.match(regex);
       if (match) {
-        const [, part1, part2, part3] = match; 
+        const [, part1, part2, part3] = match;
         switch (format) {
           case "MM/DD/YYYY":
-            return `20${part3}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;
+            return `20${part3}-${part1.padStart(2, "0")}-${part2.padStart(
+              2,
+              "0"
+            )}`;
           case "YY/MM/DD":
-            return `20${part1}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
+            return `20${part1}-${part2.padStart(2, "0")}-${part3.padStart(
+              2,
+              "0"
+            )}`;
           case "YYYY/MM/DD":
-            return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
+            return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(
+              2,
+              "0"
+            )}`;
           case "M/D/YYYY":
-            return `${part3}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;
+            return `${part3}-${part1.padStart(2, "0")}-${part2.padStart(
+              2,
+              "0"
+            )}`;
           case "YY/M/D":
-            return `20${part1.padStart(2, "0")}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
+            return `20${part1.padStart(2, "0")}-${part2.padStart(
+              2,
+              "0"
+            )}-${part3.padStart(2, "0")}`;
           case "YYYY/M/D":
-            return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
+            return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(
+              2,
+              "0"
+            )}`;
           default:
             return null;
         }
@@ -84,8 +106,6 @@ const UploadReceipt = () => {
         });
         setResponseData(response);
         setError(null);
-        console.log(response);
-        console.log("Surcharges:", response.surcharges);
         await sendReceiptDataToBackend(response, selectedFile.name);
       } catch (error) {
         console.error("Error analyzing receipt:", error);
@@ -110,7 +130,7 @@ const UploadReceipt = () => {
       return;
     }
 
-    console.log("Parsed Date:", formattedDate);
+    //console.log("Parsed Date:", formattedDate);
 
     try {
       const restaurantResponse = await backendApi.post("/restaurant", {
@@ -152,7 +172,7 @@ const UploadReceipt = () => {
         }
       }
 
-      console.log("Data saved to the backend successfully.");
+      //console.log("Data saved to the backend successfully.");
     } catch (error) {
       console.error("Error sending data to the backend:", error);
       setError("Failed to save receipt data to the backend.");
@@ -162,6 +182,10 @@ const UploadReceipt = () => {
   return (
     <div className="home-container">
       <Header />
+      <button className="back-button" onClick={() => navigate(-1)}>
+        <FaArrowLeft style={{ marginRight: "8px" }} />
+        Back
+      </button>
       <div className="page-container">
         <h2 className="page-heading">Upload Receipt</h2>
         <input type="file" accept="image/*" onChange={handleFileChange} />

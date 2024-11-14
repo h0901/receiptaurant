@@ -5,6 +5,8 @@ import { Restaurant } from "../interfaces";
 import Header from "./Header";
 import "../styles/ViewSurcharges.css";
 import Loader from "./Loader";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const ViewSurcharges: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -20,6 +22,8 @@ const ViewSurcharges: React.FC = () => {
   const [surchargeStatus, setSurchargeStatus] = useState<{
     [key: number]: string;
   }>({});
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -125,6 +129,10 @@ const ViewSurcharges: React.FC = () => {
   return (
     <div className="home-container">
       <Header />
+      <button className="back-button" onClick={() => navigate(-1)}>
+        <FaArrowLeft style={{ marginRight: "8px" }} />
+        Back
+      </button>
       <div style={{ marginTop: "50px" }}>
         <div className="restaurants-header">
           <h2>Restaurants</h2>

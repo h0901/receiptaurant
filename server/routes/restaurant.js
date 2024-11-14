@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get('/:name/bills', async (req, res) => {
+router.get("/:name/bills", async (req, res) => {
   const restaurantName = decodeURIComponent(req.params.name);
 
   const query = `
@@ -51,13 +51,12 @@ router.get('/:name/bills', async (req, res) => {
   `;
 
   try {
-      const results = await db.query(query, [restaurantName]);
-      res.json(results);
+    const results = await db.query(query, [restaurantName]);
+    res.json(results);
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 module.exports = router;
