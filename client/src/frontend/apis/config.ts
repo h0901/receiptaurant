@@ -4,7 +4,7 @@ export const API_PROMPT =
   //"Use the attached image and return a JSON object containing restaurant name, date, subtotal, total, surcharges (structure format with surcharge name and surcharge value), and taxes:\n";
   `Please use the attached image of a receipt and return a JSON object of the following information: 
   restaurant_name: The name of the establishment.
-  date: The date of the receipt.
+  date: Just the date and not the time on the receipt.
   subtotal: The total amount before taxes and surcharges.
   total: The final amount due.
   surcharges: A list of any additional charges, exclude any taxes(including sales tax), with the following details:
