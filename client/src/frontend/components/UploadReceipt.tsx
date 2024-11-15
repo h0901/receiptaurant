@@ -28,9 +28,27 @@ const UploadReceipt = () => {
       { regex: /^(\d{2})\/(\d{2})\/(\d{2})$/, format: "YY/MM/DD" },
       { regex: /^(\d{4})\/(\d{2})\/(\d{2})$/, format: "YYYY/MM/DD" },
       { regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, format: "M/D/YYYY" },
+      { regex: /^(\d{1,2})\/(\d{1,2})\/(\d{2})$/, format: "M/D/YY" },
       { regex: /^(\d{1,2})\/(\d{1,2})\/(\d{2})$/, format: "YY/M/D" },
       { regex: /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/, format: "YYYY/M/D" },
+      { regex: /^(\d{2}) (\w{3}) (\d{4})$/, format: "DD MMM YYYY" },
+      { regex: /^(\d{2})-(\w{3})-(\d{4})$/, format: "DD-MMM-YYYY" },
     ];
+
+    const monthMap: { [key: string]: string } = {
+      Jan: "01",
+      Feb: "02",
+      Mar: "03",
+      Apr: "04",
+      May: "05",
+      Jun: "06",
+      Jul: "07",
+      Aug: "08",
+      Sep: "09",
+      Oct: "10",
+      Nov: "11",
+      Dec: "12",
+    };
 
     for (const { regex, format } of patterns) {
       const match = date.match(regex);
@@ -43,11 +61,15 @@ const UploadReceipt = () => {
               "0"
             )}`;
           case "MM/DD/YY":
-            {const yearMMDDYY = parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
-            return `${yearMMDDYY}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;}
+            {
+              const yearMMDDYY = parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
+              return `${yearMMDDYY}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;
+            }
           case "YY/MM/DD":
-            {const yearYYMMDD = parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
-            return `${yearYYMMDD}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;}
+            {
+              const yearYYMMDD = parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
+              return `${yearYYMMDD}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
+            }
           case "YYYY/MM/DD":
             return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(
               2,
@@ -58,14 +80,26 @@ const UploadReceipt = () => {
               2,
               "0"
             )}`;
+          case "M/D/YY": {
+            const yearMDYY = parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
+            return `${yearMDYY}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;
+          }
           case "YY/M/D":
-            {const yearYYMD = parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
-            return `${yearYYMD}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;}
+            {
+              const yearYYMD = parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
+              return `${yearYYMD}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
+            }
           case "YYYY/M/D":
             return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(
               2,
               "0"
             )}`;
+          case "DD MMM YYYY":
+          case "DD-MMM-YYYY":
+            {
+              const month = monthMap[part2];
+              return `${part3}-${month}-${part1.padStart(2, "0")}`;
+            }
           default:
             return null;
         }
@@ -205,7 +239,20 @@ const UploadReceipt = () => {
             </div>
             <div className="response-item">Total: {responseData.total}</div>
             <div className="response-item">Date: {responseData.date}</div>
-            <div className="response-item">Taxes: {responseData.taxes}</div>
+            <div className="response-item">
+              Taxes:
+              {Array.isArray(responseData.taxes) && responseData.taxes.length > 0 ? (
+                responseData.taxes.map((tax: { tax_name: string; tax_value: string; tax_percent: string }, index: number) => (
+                  <div key={index}>
+                    <span>
+                      {tax.tax_name}: {tax.tax_value} ({tax.tax_percent})
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <span>No taxes available.</span>
+              )}
+            </div>
             <div className="surcharges-section">
               <h4 className="surcharges-title">Surcharges</h4>
               {responseData.surcharges && responseData.surcharges.length > 0 ? (
