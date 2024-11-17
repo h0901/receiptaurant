@@ -184,10 +184,14 @@ const UploadReceipt = () => {
         for (const surcharge of data.surcharges) {
           const surchargeName = surcharge["surcharge_name"];
           let surchargePercent = surcharge["surcharge_percent"]
-            ? parseFloat(surcharge["surcharge_percent"].replace("%", ""))
+            ? parseFloat(String(surcharge["surcharge_percent"]).replace("%", ""))
             : 0;
-          const surchargeAmount = surcharge["surcharge_value"]
-            ? parseFloat(surcharge["surcharge_value"].replace(/,/g, ""))
+            const surchargeAmount = surcharge.surcharge_value
+            ? parseFloat(
+                typeof surcharge.surcharge_value === "string"
+                  ? surcharge.surcharge_value.replace(/,/g, "")
+                  : (surcharge.surcharge_value as string).toString()
+              )
             : 0;
 
           if (surchargePercent == 0 && surchargeAmount > 0 && data.subtotal) {
@@ -212,7 +216,7 @@ const UploadReceipt = () => {
       setError("Failed to save receipt data to the backend.");
     }
   };
-
+  
   return (
     <div className="home-container">
       <Header />
@@ -241,18 +245,17 @@ const UploadReceipt = () => {
             <div className="response-item">Date: {responseData.date}</div>
             <div className="response-item">
               Taxes:
-              {Array.isArray(responseData.taxes) && responseData.taxes.length > 0 ? (
-                responseData.taxes.map((tax: { tax_name: string; tax_value: string; tax_percent: string }, index: number) => (
+              {responseData && responseData.taxes ? (
+                Object.entries(responseData.taxes).map(([tax_name, tax_value], index) => (
                   <div key={index}>
-                    <span>
-                      {tax.tax_name}: {tax.tax_value} ({tax.tax_percent})
-                    </span>
+                    {tax_name}: {tax_value}
                   </div>
                 ))
               ) : (
                 <span>No taxes available.</span>
               )}
             </div>
+
             <div className="surcharges-section">
               <h4 className="surcharges-title">Surcharges</h4>
               {responseData.surcharges && responseData.surcharges.length > 0 ? (
