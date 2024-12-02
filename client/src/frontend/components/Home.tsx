@@ -109,7 +109,7 @@ const Home: React.FC = () => {
       );
       const surchargeData = response.data[0];
       setSurcharges(surchargeData);
-      setShowModal(true); 
+      setShowModal(true);
     } catch (error) {
       console.error("Error fetching bills and surcharges:", error);
     }
@@ -229,7 +229,7 @@ const Home: React.FC = () => {
       )}
       {imageURL && (
         <div className="image-modal">
-          <div className="modal-content">
+          <div className="modal-content-surcharge">
             <img src={imageURL} alt="Bill" />
             <button className="close-modal" onClick={handleCloseImage}>
               x

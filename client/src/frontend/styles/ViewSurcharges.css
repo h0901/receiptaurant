@@ -212,7 +212,7 @@ li span {
   justify-content: center;
   z-index: 1000;
 }
-/* .modal-content {
+.modal-content-surcharge {
   position: relative;
   background: #ffffff;
   padding: 20px;
@@ -225,7 +225,7 @@ li span {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-} */
+}
 .image-container {
   width: 50%;
   max-height: 50%;
@@ -258,7 +258,7 @@ li span {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s ease;
+  transition: 0.3s ease;
 }
 .close-modal:hover {
   background: darkred;
