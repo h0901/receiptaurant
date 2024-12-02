@@ -21,3 +21,9 @@ x: x coordinate of the data
 y: y coordinate of the data
 width: width of the data
 height: height of the data`
+
+export const API_YELP_PROMOTIONS_KEY = `Y7BKhvltcCcOts52AX1ZTslZsX9iWPwX_TpOT62W2_JG7WdCGLAZb1OrJO6IKR4-CN_ZM5Dkk8dKwsw3K8IbwW2bEo9CBr7wt4-TDzWaX6Yg5Kwe87WSUEYAhjVNZ3Yx`
+
+export const API_YELP_CLIENT_ID = `rbD-n8-ou2PEnUXc1qaQBQ`
+
+export const API_YELP_ENDPOINT = `https://api.yelp.com/v3/businesses/search`

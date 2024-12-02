@@ -19,11 +19,8 @@ const Home: React.FC = () => {
   const [surchargeStatus, setSurchargeStatus] = useState<{
     [key: number]: string;
   }>({});
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [selectedSurcharge, setSelectedSurcharge] = useState<Surcharge | null>(
-    null
-  );
-
+  const [showModal, setShowModal] = useState(false);
+  const [imageURL, setImageURL] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -112,6 +109,7 @@ const Home: React.FC = () => {
       );
       const surchargeData = response.data[0];
       setSurcharges(surchargeData);
+      setShowModal(true); // Show modal on click
     } catch (error) {
       console.error("Error fetching bills and surcharges:", error);
     }
@@ -121,19 +119,22 @@ const Home: React.FC = () => {
     setSearchQuery(event.target.value);
   };
 
-  const handleCloseSurcharges = () => {
+  const closeModal = () => {
+    setShowModal(false);
     setSelectedRestaurantName("");
     setSurcharges([]);
   };
 
-  const handleSurchargeClick = (surcharge: Surcharge) => {
-    setSelectedSurcharge(surcharge);
-    setShowModal(true);
+  const handleViewImage = async (imageKey: string) => {
+    try {
+      const response = await backendApi.get(`/s3Url/viewImage/${imageKey}`);
+      setImageURL(response.data.imageUrl);
+    } catch (error) {
+      console.error("Error fetching image URL:", error);
+    }
   };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedSurcharge(null);
+  const handleCloseImage = () => {
+    setImageURL(null);
   };
 
   return (
@@ -144,48 +145,46 @@ const Home: React.FC = () => {
         Back
       </button>
       <main className="main-content">
-        {!selectedRestaurantName ? (
-          <>
-            <h2>Welcome to Receiptaurant</h2>
-            <div className="description">
-              Discover restaurants and manage surcharges easily with
-              Receiptaurant.
-            </div>
-            <div className="restaurants-header">
-              <h2>Restaurants</h2>
-            </div>
-            <div className="search-bar-container">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                placeholder="Search restaurants by name..."
-                className="search-bar"
-              />
-            </div>
-            {!loading ? (
-              <div className="restaurant-cards">
-                {filteredRestaurants.map((restaurant: any) => (
-                  <div
-                    key={restaurant.res_id}
-                    className={`restaurant-card ${
-                      surchargeStatus[restaurant.res_id]
-                    }`}
-                    onClick={() => handleCardClick(restaurant.Name)}
-                  >
-                    {restaurant.Name}
-                  </div>
-                ))}
+        <h2>Welcome to Receiptaurant</h2>
+        <div className="description">
+          Discover restaurants and manage surcharges easily with Receiptaurant.
+        </div>
+        <div className="restaurants-header">
+          <h2>Restaurants</h2>
+        </div>
+        <div className="search-bar-container">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search restaurants by name..."
+            className="search-bar"
+          />
+        </div>
+        {!loading ? (
+          <div className="restaurant-cards">
+            {filteredRestaurants.map((restaurant: any) => (
+              <div
+                key={restaurant.res_id}
+                className={`restaurant-card ${
+                  surchargeStatus[restaurant.res_id]
+                }`}
+                onClick={() => handleCardClick(restaurant.Name)}
+              >
+                {restaurant.Name}
               </div>
-            ) : (
-              <Loader text="Fetching restaurants..." />
-            )}
-          </>
+            ))}
+          </div>
         ) : (
-          <div className="surcharges-section">
-            <button className="back-button" onClick={handleCloseSurcharges}>
-              <FaArrowLeft style={{ marginRight: "8px" }} />
-              Back
+          <Loader text="Fetching restaurants..." />
+        )}
+      </main>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button className="close-modal" onClick={closeModal}>
+              &times;
             </button>
             <div className="surcharges-header">
               <h3>Surcharges for {selectedRestaurantName}</h3>
@@ -193,11 +192,7 @@ const Home: React.FC = () => {
             {surcharges.length > 0 ? (
               <ul className="surchargeList">
                 {surcharges.map((surcharge, index) => (
-                  <li
-                    key={surcharge.sur_id || index}
-                    className="surchargeItem"
-                    onClick={() => handleSurchargeClick(surcharge)}
-                  >
+                  <li key={surcharge.sur_id || index} className="surchargeItem">
                     <div className="surchargeName">
                       {surcharge.surcharge_name || "Unknown Surcharge"}
                     </div>
@@ -214,6 +209,14 @@ const Home: React.FC = () => {
                           ? new Date(surcharge.Bill_Date).toLocaleDateString()
                           : "N/A"}
                       </span>
+                      {surcharge.Image_key && (
+                        <button
+                          className="view-image-btn"
+                          onClick={() => handleViewImage(surcharge.Image_key)}
+                        >
+                          View Image
+                        </button>
+                      )}
                     </div>
                   </li>
                 ))}
@@ -222,36 +225,18 @@ const Home: React.FC = () => {
               <p>No surcharges available.</p>
             )}
           </div>
-        )}
-        {showModal && selectedSurcharge && (
-          <div className="modal-overlay" onClick={handleCloseModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h2>Surcharge Details</h2>
-              <p>
-                <strong>Name:</strong>{" "}
-                {selectedSurcharge.surcharge_name || "Unknown Surcharge"}
-              </p>
-              <p>
-                <strong>Percent:</strong>{" "}
-                {selectedSurcharge.surcharge_percent || "N/A"}%
-              </p>
-              <p>
-                <strong>Value:</strong>{" "}
-                {selectedSurcharge.surcharge_amount || "N/A"}
-              </p>
-              <p>
-                <strong>Date:</strong>{" "}
-                {selectedSurcharge.Bill_Date
-                  ? new Date(selectedSurcharge.Bill_Date).toLocaleDateString()
-                  : "N/A"}
-              </p>
-              <button className="close-modal" onClick={handleCloseModal}>
-                Close
-              </button>
-            </div>
+        </div>
+      )}
+      {imageURL && (
+        <div className="image-modal">
+          <div className="modal-content">
+            <img src={imageURL} alt="Bill" />
+            <button className="close-modal" onClick={handleCloseImage}>
+              x
+            </button>
           </div>
-        )}
-      </main>
+        </div>
+      )}
     </div>
   );
 };

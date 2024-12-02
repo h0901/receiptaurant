@@ -184,7 +184,7 @@ li span {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7); 
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -192,42 +192,84 @@ li span {
 }
 
 .modal-content {
-  background-color: white;
-  padding: 40px; 
-  border-radius: 16px; 
-  max-width: 800px; 
-  width: 90%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+}
+
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  position: relative;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  max-height: 90%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 30px; 
+  justify-content: center;
+  align-items: center;
 }
-
-.modal-content h2 {
-  margin-top: 0;
-  font-size: 32px; 
-  font-weight: 700;
-  color: #333;
+.image-container {
+  width: 50%;
+  max-height: 50%;
+  overflow: auto;
+  border: 2px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f8f8f8;
 }
-
-.modal-content p {
-  font-size: 1.25rem; 
-  color: #555;
-  line-height: 1.5; 
+.receipt-image {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .close-modal {
-  margin-top: 30px;
-  padding: 15px 30px;
-  background-color: #007bff;
-  color: white;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #8c6e63;
   border: none;
-  border-radius: 8px;
+  border-radius: 50%;
+  font-size: 18px;
   cursor: pointer;
-  font-size: 1.3rem;
-  transition: background-color 0.3s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease;
 }
-
 .close-modal:hover {
-  background-color: #0056b3;
+  background: darkred;
+}
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 95%;
+    padding: 10px;
+  }
+  .receipt-image {
+    max-width: 100%;
+    max-height: 70%;
+  }
 }
