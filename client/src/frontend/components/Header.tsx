@@ -14,6 +14,14 @@ const Header: React.FC = () => {
             Receiptaurant
           </a>
         </h1>
+        <nav className="nav-tabs">
+          <a href="/" className="tab-button">
+            Home
+          </a>
+          <a href="/upload-receipt" className="tab-button">
+            New Bill
+          </a>
+        </nav>
         <div className="user-profile">
           <FaUserCircle style={{ fontSize: "2rem", marginRight: "10px" }} />
           <span className="user-name">Welcome, {user?.firstName}!</span>

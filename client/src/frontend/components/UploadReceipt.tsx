@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { analyze_receipt } from "../apis/analyzeReceipt";
+import { analyze_receipt_api } from "../apis/analyzeReceipt";
 import { Receipt } from "../interfaces";
 import backendApi from "../apis/axiosConfig";
 import Header from "./Header";
@@ -7,6 +7,11 @@ import "../styles/UploadReceipt.css";
 import Loader from "./Loader";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import {
+  API_ENDPOINT,
+  API_PROMPT,
+  API_USER_DATA_COORDINATES_PROMPT,
+} from "../apis/config";
 
 const UploadReceipt = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -60,16 +65,22 @@ const UploadReceipt = () => {
               2,
               "0"
             )}`;
-          case "MM/DD/YY":
-            {
-              const yearMMDDYY = parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
-              return `${yearMMDDYY}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;
-            }
-          case "YY/MM/DD":
-            {
-              const yearYYMMDD = parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
-              return `${yearYYMMDD}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
-            }
+          case "MM/DD/YY": {
+            const yearMMDDYY =
+              parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
+            return `${yearMMDDYY}-${part1.padStart(2, "0")}-${part2.padStart(
+              2,
+              "0"
+            )}`;
+          }
+          case "YY/MM/DD": {
+            const yearYYMMDD =
+              parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
+            return `${yearYYMMDD}-${part2.padStart(2, "0")}-${part3.padStart(
+              2,
+              "0"
+            )}`;
+          }
           case "YYYY/MM/DD":
             return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(
               2,
@@ -81,31 +92,72 @@ const UploadReceipt = () => {
               "0"
             )}`;
           case "M/D/YY": {
-            const yearMDYY = parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
-            return `${yearMDYY}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;
+            const yearMDYY =
+              parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
+            return `${yearMDYY}-${part1.padStart(2, "0")}-${part2.padStart(
+              2,
+              "0"
+            )}`;
           }
-          case "YY/M/D":
-            {
-              const yearYYMD = parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
-              return `${yearYYMD}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
-            }
+          case "YY/M/D": {
+            const yearYYMD =
+              parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
+            return `${yearYYMD}-${part2.padStart(2, "0")}-${part3.padStart(
+              2,
+              "0"
+            )}`;
+          }
           case "YYYY/M/D":
             return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(
               2,
               "0"
             )}`;
           case "DD MMM YYYY":
-          case "DD-MMM-YYYY":
-            {
-              const month = monthMap[part2];
-              return `${part3}-${month}-${part1.padStart(2, "0")}`;
-            }
+          case "DD-MMM-YYYY": {
+            const month = monthMap[part2];
+            return `${part3}-${month}-${part1.padStart(2, "0")}`;
+          }
           default:
             return null;
         }
       }
     }
     return null;
+  };
+
+  const blurImage = async (image: string, coordinates: any[]) => {
+    const img = new Image();
+    img.src = `data:image/jpeg;base64,${image}`;
+
+    return new Promise<string>((resolve, reject) => {
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject("Failed to get canvas context.");
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        ctx.drawImage(img, 0, 0);
+
+        coordinates.forEach(({ x, y, width, height }) => {
+          const blurredRegion = ctx.getImageData(x, y, width, height);
+          for (let i = 0; i < blurredRegion.data.length; i += 4) {
+            const avg =
+              (blurredRegion.data[i] +
+                blurredRegion.data[i + 1] +
+                blurredRegion.data[i + 2]) /
+              3;
+            blurredRegion.data[i] = avg;
+            blurredRegion.data[i + 1] = avg;
+            blurredRegion.data[i + 2] = avg;
+          }
+          ctx.putImageData(blurredRegion, x, y);
+        });
+
+        resolve(canvas.toDataURL("image/jpeg").split(",")[1]);
+      };
+    });
   };
 
   const handleUpload = async () => {
@@ -119,7 +171,19 @@ const UploadReceipt = () => {
       const image = result.split(",")[1];
 
       try {
-        const response: Receipt = await analyze_receipt(image);
+        const coordinates = await analyze_receipt_api(
+          image,
+          API_ENDPOINT,
+          API_USER_DATA_COORDINATES_PROMPT
+        );
+
+        const blurredImage = await blurImage(image, coordinates);
+
+        const response: Receipt = await analyze_receipt_api(
+          blurredImage,
+          API_ENDPOINT,
+          API_PROMPT
+        );
 
         response.surcharges = response.surcharges.map((surcharge) => {
           if (
@@ -184,9 +248,11 @@ const UploadReceipt = () => {
         for (const surcharge of data.surcharges) {
           const surchargeName = surcharge["surcharge_name"];
           let surchargePercent = surcharge["surcharge_percent"]
-            ? parseFloat(String(surcharge["surcharge_percent"]).replace("%", ""))
+            ? parseFloat(
+                String(surcharge["surcharge_percent"]).replace("%", "")
+              )
             : 0;
-            const surchargeAmount = surcharge.surcharge_value
+          const surchargeAmount = surcharge.surcharge_value
             ? parseFloat(
                 typeof surcharge.surcharge_value === "string"
                   ? surcharge.surcharge_value.replace(/,/g, "")
@@ -209,14 +275,14 @@ const UploadReceipt = () => {
           });
         }
       }
-      setSuccessfullUpload(true)
+      setSuccessfullUpload(true);
       //console.log("Data saved to the backend successfully.");
     } catch (error) {
       console.error("Error sending data to the backend:", error);
       setError("Failed to save receipt data to the backend.");
     }
   };
-  
+
   return (
     <div className="home-container">
       <Header />
@@ -231,7 +297,11 @@ const UploadReceipt = () => {
           Upload
         </button>
         {error && <p style={{ color: "red" }}>{error}</p>}
-        {successfullUpload && <p style={{ color: "green", marginTop: '10px' }}>Receipt uploaded successfully!</p>}
+        {successfullUpload && (
+          <p style={{ color: "green", marginTop: "10px" }}>
+            Receipt uploaded successfully!
+          </p>
+        )}
         {loading && <Loader text="Analyzing your receipt..." />}
         {!loading && responseData && (
           <div className="response-data">
@@ -246,11 +316,13 @@ const UploadReceipt = () => {
             <div className="response-item">
               Taxes:
               {responseData && responseData.taxes ? (
-                Object.entries(responseData.taxes).map(([tax_name, tax_value], index) => (
-                  <div key={index}>
-                    {tax_name}: {tax_value}
-                  </div>
-                ))
+                Object.entries(responseData.taxes).map(
+                  ([tax_name, tax_value], index) => (
+                    <div key={index}>
+                      {tax_name}: {tax_value}
+                    </div>
+                  )
+                )
               ) : (
                 <span>No taxes available.</span>
               )}

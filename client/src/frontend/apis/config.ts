@@ -15,3 +15,9 @@ export const API_PROMPT =
 
 export const VITE_CLERK_PUBLISHABLE_KEY =
     "pk_test_aG9wZWZ1bC1hbnQtNTYuY2xlcmsuYWNjb3VudHMuZGV2JA";
+
+export const API_USER_DATA_COORDINATES_PROMPT = `Given this bill, provide me an array for each user detail with coordinates of sensitive user details containing specific x coordinate, y coordinate, width and height exclude date, amount and time. The result should be an array of objects where each object is of the format:-
+x: x coordinate of the data
+y: y coordinate of the data
+width: width of the data
+height: height of the data`

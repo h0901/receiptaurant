@@ -12,6 +12,8 @@ const corsOptions = {
   origin: [
     "https://receiptaurant-delta.vercel.app",
     "https://receiptaurant-server.vercel.app",
+    "http://localhost:8080",
+    "http://localhost:5173",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
