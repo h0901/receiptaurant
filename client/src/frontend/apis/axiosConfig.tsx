@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const backendApi = axios.create({
-  //baseURL: "https://receiptaurant-server.vercel.app/api",
-  baseURL: "http://localhost:8080/api",
+  baseURL: "https://receiptaurant-server.vercel.app/api",
   headers: {
     "Content-Type": "application/json",
   },

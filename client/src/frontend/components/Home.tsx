@@ -1,29 +1,256 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { FaCloudUploadAlt, FaStore } from "react-icons/fa"; 
-import "../styles/Home.css";
-import "../styles/AuthPage.css";
+import React, { useEffect, useState } from "react";
+import { FaArrowLeft } from "react-icons/fa";
+import backendApi from "../apis/axiosConfig";
 import Header from "./Header";
+import Loader from "./Loader";
+import "../styles/Home.css";
+import "../styles/ViewSurcharges.css";
+import { Surcharge } from "../interfaces";
+import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
+  const [restaurants, setRestaurants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filteredRestaurants, setFilteredRestaurants] = useState([]);
+  const [selectedRestaurantName, setSelectedRestaurantName] =
+    useState<string>("");
+  const [surcharges, setSurcharges] = useState<Surcharge[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [surchargeStatus, setSurchargeStatus] = useState<{
+    [key: number]: string;
+  }>({});
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [selectedSurcharge, setSelectedSurcharge] = useState<Surcharge | null>(
+    null
+  );
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const response = await backendApi.get("/restaurant");
+        const restaurantData = response.data;
+
+        setRestaurants(
+          restaurantData.map(
+            (restaurant: { res_id: number; Name: string }) => ({
+              res_id: restaurant.res_id,
+              Name: restaurant.Name,
+            })
+          )
+        );
+        setFilteredRestaurants(restaurantData);
+        setLoading(false);
+        fetchSurchargeStatus(restaurantData);
+      } catch (error) {
+        console.error("Error fetching restaurants:", error);
+      }
+    };
+
+    const fetchSurchargeStatus = async (restaurants: any[]) => {
+      const status: { [key: number]: string } = {};
+
+      for (const restaurant of restaurants) {
+        try {
+          const response = await backendApi.get(
+            `/restaurant/${encodeURIComponent(restaurant.Name)}/bills`
+          );
+          const surchargeData = response.data[0];
+
+          if (!surchargeData || surchargeData.length === 0) {
+            status[restaurant.res_id] = "no-surcharge";
+          } else {
+            const totalSurchargePercent = surchargeData.reduce(
+              (acc: number, surcharge: any) =>
+                acc +
+                (typeof surcharge.surcharge_percent === "number"
+                  ? surcharge.surcharge_percent
+                  : Number(surcharge.surcharge_percent) || 0),
+              0
+            );
+
+            const avgSurchargePercent =
+              surchargeData.length > 0
+                ? totalSurchargePercent / surchargeData.length
+                : 0;
+
+            status[restaurant.res_id] =
+              avgSurchargePercent < 3.5 ? "low-surcharge" : "high-surcharge";
+          }
+        } catch (error) {
+          console.error(
+            `Error fetching surcharges for ${restaurant.Name}:`,
+            error
+          );
+          status[restaurant.res_id] = "no-surcharge";
+        }
+      }
+      setSurchargeStatus(status);
+    };
+
+    fetchRestaurants();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setFilteredRestaurants(
+        restaurants.filter((restaurant: any) =>
+          restaurant.Name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredRestaurants(restaurants);
+    }
+  }, [searchQuery, restaurants]);
+
+  const handleCardClick = async (name: string) => {
+    setSelectedRestaurantName(name);
+    try {
+      const response = await backendApi.get(
+        `/restaurant/${encodeURIComponent(name)}/bills`
+      );
+      const surchargeData = response.data[0];
+      setSurcharges(surchargeData);
+    } catch (error) {
+      console.error("Error fetching bills and surcharges:", error);
+    }
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleCloseSurcharges = () => {
+    setSelectedRestaurantName("");
+    setSurcharges([]);
+  };
+
+  const handleSurchargeClick = (surcharge: Surcharge) => {
+    setSelectedSurcharge(surcharge);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedSurcharge(null);
+  };
+
   return (
     <div className="home-container">
       <Header />
+      <button className="back-button" onClick={() => navigate(-1)}>
+        <FaArrowLeft style={{ marginRight: "8px" }} />
+        Back
+      </button>
       <main className="main-content">
-        <h2>Welcome to Receiptaurant</h2>
-        <div className="description">
-          Discover restaurants and manage surcharges easily with Receiptaurant.
-        </div>
-        <div className="button-container">
-          <Link to="/upload-receipt" className="link-button">
-            <FaCloudUploadAlt style={{ marginRight: "8px" }} />
-            Upload Receipts
-          </Link>
-          <Link to="/view-restaurant" className="link-button">
-            <FaStore style={{ marginRight: "8px" }} />
-            View Restaurant Surcharges
-          </Link>
-        </div>
+        {!selectedRestaurantName ? (
+          <>
+            <h2>Welcome to Receiptaurant</h2>
+            <div className="description">
+              Discover restaurants and manage surcharges easily with
+              Receiptaurant.
+            </div>
+            <div className="restaurants-header">
+              <h2>Restaurants</h2>
+            </div>
+            <div className="search-bar-container">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                placeholder="Search restaurants by name..."
+                className="search-bar"
+              />
+            </div>
+            {!loading ? (
+              <div className="restaurant-cards">
+                {filteredRestaurants.map((restaurant: any) => (
+                  <div
+                    key={restaurant.res_id}
+                    className={`restaurant-card ${
+                      surchargeStatus[restaurant.res_id]
+                    }`}
+                    onClick={() => handleCardClick(restaurant.Name)}
+                  >
+                    {restaurant.Name}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Loader text="Fetching restaurants..." />
+            )}
+          </>
+        ) : (
+          <div className="surcharges-section">
+            <button className="back-button" onClick={handleCloseSurcharges}>
+              <FaArrowLeft style={{ marginRight: "8px" }} />
+              Back
+            </button>
+            <div className="surcharges-header">
+              <h3>Surcharges for {selectedRestaurantName}</h3>
+            </div>
+            {surcharges.length > 0 ? (
+              <ul className="surchargeList">
+                {surcharges.map((surcharge, index) => (
+                  <li
+                    key={surcharge.sur_id || index}
+                    className="surchargeItem"
+                    onClick={() => handleSurchargeClick(surcharge)}
+                  >
+                    <div className="surchargeName">
+                      {surcharge.surcharge_name || "Unknown Surcharge"}
+                    </div>
+                    <div className="surchargeDetails">
+                      <span className="surchargePercent">
+                        {surcharge.surcharge_percent || "N/A"}%
+                      </span>
+                      <span className="surchargeValue">
+                        Value: {surcharge.surcharge_amount || "N/A"}
+                      </span>
+                      <span className="surchargeDate">
+                        Date:{" "}
+                        {surcharge.Bill_Date
+                          ? new Date(surcharge.Bill_Date).toLocaleDateString()
+                          : "N/A"}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No surcharges available.</p>
+            )}
+          </div>
+        )}
+        {showModal && selectedSurcharge && (
+          <div className="modal-overlay" onClick={handleCloseModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h2>Surcharge Details</h2>
+              <p>
+                <strong>Name:</strong>{" "}
+                {selectedSurcharge.surcharge_name || "Unknown Surcharge"}
+              </p>
+              <p>
+                <strong>Percent:</strong>{" "}
+                {selectedSurcharge.surcharge_percent || "N/A"}%
+              </p>
+              <p>
+                <strong>Value:</strong>{" "}
+                {selectedSurcharge.surcharge_amount || "N/A"}
+              </p>
+              <p>
+                <strong>Date:</strong>{" "}
+                {selectedSurcharge.Bill_Date
+                  ? new Date(selectedSurcharge.Bill_Date).toLocaleDateString()
+                  : "N/A"}
+              </p>
+              <button className="close-modal" onClick={handleCloseModal}>
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
