@@ -23,6 +23,8 @@ const ViewSurcharges: React.FC = () => {
     [key: number]: string;
   }>({});
 
+  const [imageURL, setImageURL] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -126,6 +128,19 @@ const ViewSurcharges: React.FC = () => {
     setSurcharges([]);
   };
 
+  const handleViewImage = async (imageKey: string) => {
+    try {
+      const response = await backendApi.get(`/s3Url/viewImage/${imageKey}`);
+      setImageURL(response.data.imageUrl);
+    } catch (error) {
+      console.error("Error fetching image URL:", error);
+    }
+  };
+
+  const handleCloseImage = () => {
+    setImageURL(null);
+  };
+
   return (
     <div className="home-container">
       <Header />
@@ -200,6 +215,14 @@ const ViewSurcharges: React.FC = () => {
                                 ).toLocaleDateString()
                               : "N/A"}
                           </span>
+                          {surcharge.Image_key && (
+                            <button
+                              className="view-image-btn"
+                              onClick={() => handleViewImage(surcharge.Image_key)}
+                            >
+                              View Image
+                            </button>
+                          )}
                         </div>
                       </li>
                     ))}
@@ -207,6 +230,16 @@ const ViewSurcharges: React.FC = () => {
                 ) : (
                   <p>No surcharges available.</p>
                 )}
+              </div>
+            )}
+            {imageURL && (
+              <div className="image-modal">
+                <div className="modal-content">
+                  <img src={imageURL} alt="Bill" />
+                  <button className="close-modal" onClick={handleCloseImage}>
+                    x
+                  </button>
+                </div>
               </div>
             )}
           </div>

@@ -21,6 +21,34 @@ const UploadReceipt = () => {
     setSelectedFile(event.target.files?.[0] || null);
   };
 
+  const getSignedUrl = async () => {
+    try {
+      const response = await backendApi.get('/s3Url');
+      return response.data.url; 
+    } catch (err) {
+      console.error("Error fetching S3 signed URL:", err);
+      throw new Error("Failed to get S3 signed URL");
+    }
+  };
+
+  const uploadToS3 = async (file: File, s3URL: string) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      await fetch(s3URL, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": "multipart/form-data", 
+        },
+      });
+    } catch (err) {
+      console.error("Error uploading file to S3:", err);
+      throw new Error("Failed to upload file to S3");
+    }
+  };
+
   const parseDate = (date: string): string | null => {
     const patterns = [
       { regex: /^(\d{2})\/(\d{2})\/(\d{4})$/, format: "MM/DD/YYYY" },
@@ -119,6 +147,16 @@ const UploadReceipt = () => {
       const image = result.split(",")[1];
 
       try {
+        const url  = await getSignedUrl();
+        const imageKey = url.split("?")[0].split("/").pop();
+
+        //console.log("URL:", url);
+        await uploadToS3(selectedFile, url);
+
+        //const imageUrl = url.split("?")[0];
+
+        //console.log("Image URL:", imageUrl);
+
         const response: Receipt = await analyze_receipt(image);
 
         response.surcharges = response.surcharges.map((surcharge) => {
@@ -140,7 +178,7 @@ const UploadReceipt = () => {
         });
         setResponseData(response);
         setError(null);
-        await sendReceiptDataToBackend(response, selectedFile.name);
+        await sendReceiptDataToBackend(response, selectedFile.name, imageKey);
       } catch (error) {
         console.error("Error analyzing receipt:", error);
         setError("Error analyzing receipt. Please try again.");
@@ -152,7 +190,7 @@ const UploadReceipt = () => {
     reader.readAsDataURL(selectedFile);
   };
 
-  const sendReceiptDataToBackend = async (data: Receipt, imageName: string) => {
+  const sendReceiptDataToBackend = async (data: Receipt, imageName: string, imageKey: string) => {
     if (!data || !data.date || !data.restaurant_name) {
       setError("Incomplete receipt data received.");
       return;
@@ -164,8 +202,6 @@ const UploadReceipt = () => {
       return;
     }
 
-    //console.log("Parsed Date:", formattedDate);
-
     try {
       const restaurantResponse = await backendApi.post("/restaurant", {
         name: data.restaurant_name,
@@ -176,6 +212,7 @@ const UploadReceipt = () => {
       const billResponse = await backendApi.post("/bill", {
         restaurant_id: restaurantId,
         bill_image: imageName,
+        image_key: imageKey,
         bill_date: formattedDate,
       });
       const billId = billResponse.data.billId;
