@@ -31,6 +31,7 @@ app.get("/", (req, res) => {
 app.use("/api/restaurant", restaurantRoutes);
 app.use("/api/bill", billRoutes);
 app.use("/api/surcharge", surchargeRoutes);
+app.use("/api/s3Url", s3UploadRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

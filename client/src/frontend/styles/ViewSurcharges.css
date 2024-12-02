@@ -212,7 +212,7 @@ li span {
   justify-content: center;
   z-index: 1000;
 }
-.modal-content {
+/* .modal-content {
   position: relative;
   background: #ffffff;
   padding: 20px;
@@ -225,7 +225,7 @@ li span {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
+} */
 .image-container {
   width: 50%;
   max-height: 50%;
@@ -247,7 +247,7 @@ li span {
   position: absolute;
   top: 10px;
   right: 10px;
-  color: #8c6e63;
+  color: #fff;
   border: none;
   border-radius: 50%;
   font-size: 18px;
