@@ -4,16 +4,25 @@ const bodyParser = require("body-parser");
 const restaurantRoutes = require("./routes/restaurant.js");
 const billRoutes = require("./routes/bill.js");
 const surchargeRoutes = require("./routes/surcharges.js");
+const s3UploadRoute = require("./routes/bucketupload.js");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+// const corsOptions = {
+//   origin: [
+//     "https://receiptaurant-delta.vercel.app",
+//     "https://receiptaurant-server.vercel.app",
+//   ],
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   credentials: true,
+// };
 
 const corsOptions = {
   origin: [
     "https://receiptaurant-delta.vercel.app",
     "https://receiptaurant-server.vercel.app",
-    "http://localhost:8080",
-    "http://localhost:5173",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

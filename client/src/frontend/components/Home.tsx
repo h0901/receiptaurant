@@ -109,7 +109,7 @@ const Home: React.FC = () => {
       );
       const surchargeData = response.data[0];
       setSurcharges(surchargeData);
-      setShowModal(true); // Show modal on click
+      setShowModal(true); 
     } catch (error) {
       console.error("Error fetching bills and surcharges:", error);
     }
