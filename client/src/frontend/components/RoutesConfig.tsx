@@ -5,6 +5,7 @@ import UploadReceipt from "./UploadReceipt";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Home from "./Home";
+import ViewSurcharges from "./ViewSurcharges";
 
 const RoutesConfig = () => {
   const { user} = useClerk();
@@ -32,6 +33,14 @@ const RoutesConfig = () => {
         element={
           <SignedIn>
             <UploadReceipt />
+          </SignedIn>
+        }
+      />
+      <Route
+        path="/view-restaurant"
+        element={
+          <SignedIn>
+            <ViewSurcharges />
           </SignedIn>
         }
       />
