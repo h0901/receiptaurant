@@ -267,7 +267,7 @@ const UploadReceipt = () => {
         API_PROMPT
       );
 
-      response.surcharges = response.surcharges.map((surcharge) => {
+      /*response.surcharges = response.surcharges.map((surcharge) => {
         if (
           !surcharge.surcharge_percent &&
           surcharge.surcharge_value &&
@@ -276,6 +276,23 @@ const UploadReceipt = () => {
           const subtotal = parseFloat(response.subtotal);
           const surchargeAmount = parseFloat(
             surcharge.surcharge_value.replace(/,/g, "")
+          );
+          surcharge.surcharge_percent =
+            subtotal > 0
+              ? ((surchargeAmount / subtotal) * 100).toFixed(2) + "%"
+              : "0%";
+        }
+        return surcharge;
+      });*/
+      response.surcharges = response.surcharges.map((surcharge) => {
+        if (
+          !surcharge.surcharge_percent &&
+          surcharge.surcharge_value &&
+          response.subtotal
+        ) {
+          const subtotal = parseFloat(response.subtotal);
+          const surchargeAmount = parseFloat(
+            String(surcharge.surcharge_value).replace(/,/g, "")
           );
           surcharge.surcharge_percent =
             subtotal > 0
@@ -392,13 +409,13 @@ const UploadReceipt = () => {
               subtotal > 0 ? (surchargeAmount / subtotal) * 100 : 0;
           }
 
-          // await backendApi.post("/surcharge", {
-          //   res_id: restaurantId,
-          //   bill_id: billId,
-          //   surcharge_name: surchargeName,
-          //   surcharge_percent: surchargePercent,
-          //   surcharge_amount: surchargeAmount,
-          // });
+          await backendApi.post("/surcharge", {
+            res_id: restaurantId,
+            bill_id: billId,
+            surcharge_name: surchargeName,
+            surcharge_percent: surchargePercent,
+            surcharge_amount: surchargeAmount,
+          });
         }
       }
       setSuccessfullUpload(true);
@@ -474,13 +491,11 @@ const UploadReceipt = () => {
             <div className="response-item">
               Taxes:
               {responseData && responseData.taxes ? (
-                Object.entries(responseData.taxes).map(
-                  ([tax_name, tax_value], index) => (
-                    <div key={index}>
-                      {tax_name}: {tax_value}
-                    </div>
-                  )
-                )
+                Object.entries(responseData.taxes).map(([tax_name, tax_value], index) => (
+                  <div key={index}>
+                    <strong>{tax_name}:</strong> {tax_value}
+                  </div>
+                ))
               ) : (
                 <span>No taxes available.</span>
               )}

@@ -1,4 +1,4 @@
-export const GOOGLE_API_KEY = "AIzaSyA7gbee1inBPOpvbkVSezjM0R-lnntjG1w";
+export const GOOGLE_API_KEY = "AIzaSyAHtVQWxLtMDep9EMbIaqyp6XIWPtG-3xs";
 export const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`;
 export const API_PROMPT = `You are a receipt analysis assistant. Generate the following structured output in JSON format based on the input provided.
 

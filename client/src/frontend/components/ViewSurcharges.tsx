@@ -37,9 +37,10 @@ const ViewSurcharges: React.FC = () => {
 
         setRestaurants(
           restaurantData.map(
-            (restaurant: { res_id: number; Name: string }) => ({
+            (restaurant: { res_id: number; Name: string; location: string }) => ({
               res_id: restaurant.res_id,
               Name: restaurant.Name,
+              location: restaurant.location,
             })
           )
         );
@@ -158,12 +159,13 @@ const ViewSurcharges: React.FC = () => {
         <div className="restaurants-header">
           <h2>Restaurants</h2>
           <div className="toggle-container">
-            <span>Card View</span>
-            <label className="toggle-switch">
+            <label className="toggle-switch" style={{zIndex: '20'}}>
               <input type="checkbox" checked={isMapView} onChange={handleToggleChange} />
               <span className="slider"></span>
             </label>
-            <span>Map View</span>
+            <p style={{ fontSize: '12px', marginTop: '5px', zIndex: '50' }}>
+              {isMapView ? "Switch to List View" : "Switch to Map View"}
+            </p>
           </div>
         </div>
         {!loading ? (
@@ -179,7 +181,7 @@ const ViewSurcharges: React.FC = () => {
             </div>
             {isMapView ? (
               <div style={{ width: "100%", height: "100%" }}>
-                  <MapDisplay />
+                  <MapDisplay restaurants={restaurants}/>
               </div>
             ) : (
 

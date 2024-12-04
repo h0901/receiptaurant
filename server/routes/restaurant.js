@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
   console.log("Received get request at /api/restaurant");
   try {
     const [restaurants] = await db.query(
-      "SELECT Name, MIN(Restaurant_ID) AS res_id FROM Restaurant GROUP BY Name;"
+      "SELECT Name, MIN(Restaurant_ID) AS res_id, Location AS location FROM Restaurant GROUP BY Name;"
     );
     console.log("Database query result:", restaurants);
 
