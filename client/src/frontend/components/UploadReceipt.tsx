@@ -392,13 +392,13 @@ const UploadReceipt = () => {
               subtotal > 0 ? (surchargeAmount / subtotal) * 100 : 0;
           }
 
-          await backendApi.post("/surcharge", {
-            res_id: restaurantId,
-            bill_id: billId,
-            surcharge_name: surchargeName,
-            surcharge_percent: surchargePercent,
-            surcharge_amount: surchargeAmount,
-          });
+          // await backendApi.post("/surcharge", {
+          //   res_id: restaurantId,
+          //   bill_id: billId,
+          //   surcharge_name: surchargeName,
+          //   surcharge_percent: surchargePercent,
+          //   surcharge_amount: surchargeAmount,
+          // });
         }
       }
       setSuccessfullUpload(true);
@@ -450,7 +450,7 @@ const UploadReceipt = () => {
         <button
           onClick={handleUpload}
           className="upload-btn"
-          disabled={!selectedFile || loading}
+          disabled={!selectedFile || loading || isEditing}
         >
           Upload
         </button>
