@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { analyze_receipt_api } from "../apis/analyzeReceipt";
 import { Receipt } from "../interfaces";
 import backendApi from "../apis/axiosConfig";
@@ -7,11 +7,7 @@ import "../styles/UploadReceipt.css";
 import Loader from "./Loader";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import {
-  API_ENDPOINT,
-  API_PROMPT,
-  API_USER_DATA_COORDINATES_PROMPT,
-} from "../apis/config";
+import { API_ENDPOINT, API_PROMPT } from "../apis/config";
 
 const UploadReceipt = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -20,10 +16,111 @@ const UploadReceipt = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [successfullUpload, setSuccessfullUpload] = useState<boolean>(false);
 
+  const [imageURL, setImageURL] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [modifiedImage, setModifiedImage] = useState<string | null>(null);
+
   const navigate = useNavigate();
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedFile(event.target.files?.[0] || null);
+    setError(null);
+    setResponseData(null);
+    setSuccessfullUpload(false);
+    const file = event.target.files?.[0] || null;
+    if (file) {
+      const validTypes = ["image/jpeg", "image/png"];
+      if (!validTypes.includes(file.type)) {
+        setError("Only JPG and PNG files are allowed.");
+        return;
+      }
+
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        setError("File size must not exceed 5MB.");
+        return;
+      }
+
+      setSelectedFile(file);
+      setError(null);
+      const url = URL.createObjectURL(file);
+      setImageURL(url);
+      setIsEditing(true);
+    }
+  };
+
+  useEffect(() => {
+    if (imageURL && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      if (ctx) {
+        const img = new Image();
+        img.src = imageURL;
+        img.onload = () => {
+          const maxWidth = window.innerWidth * 0.9;
+          const maxHeight = window.innerHeight * 0.8;
+          let imgWidth = img.width;
+          let imgHeight = img.height;
+
+          if (imgWidth > maxWidth || imgHeight > maxHeight) {
+            const widthRatio = maxWidth / imgWidth;
+            const heightRatio = maxHeight / imgHeight;
+            const scale = Math.min(widthRatio, heightRatio);
+            imgWidth *= scale;
+            imgHeight *= scale;
+          }
+
+          canvas.width = imgWidth;
+          canvas.height = imgHeight;
+
+          ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+        };
+      }
+    }
+  }, [imageURL]);
+
+  const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    setIsDrawing(true);
+    drawOnCanvas(e);
+  };
+
+  const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    drawOnCanvas(e);
+  };
+
+  const handleCanvasMouseUp = () => {
+    setIsDrawing(false);
+  };
+
+  const drawOnCanvas = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, 2 * Math.PI);
+    ctx.fillStyle = "black";
+    ctx.fill();
+    ctx.closePath();
+  };
+
+  const handleSaveChanges = () => {
+    if (canvasRef.current) {
+      const dataURL = canvasRef.current.toDataURL("image/png");
+      setModifiedImage(dataURL);
+      setIsEditing(false);
+      URL.revokeObjectURL(imageURL!);
+    }
   };
 
   const parseDate = (date: string): string | null => {
@@ -125,99 +222,78 @@ const UploadReceipt = () => {
     return null;
   };
 
-  const blurImage = async (image: string, coordinates: any[]) => {
-    const img = new Image();
-    img.src = `data:image/jpeg;base64,${image}`;
+  const base64ToFile = (base64String: string, filename: string): File => {
+    const base64Data = base64String.split(",")[1];
+    const byteCharacters = atob(base64Data);
 
-    return new Promise<string>((resolve, reject) => {
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return reject("Failed to get canvas context.");
+    const byteArrays = new Uint8Array(byteCharacters.length);
 
-        canvas.width = img.width;
-        canvas.height = img.height;
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteArrays[i] = byteCharacters.charCodeAt(i);
+    }
 
-        ctx.drawImage(img, 0, 0);
+    const blob = new Blob([byteArrays], { type: "image/png" });
 
-        coordinates.forEach(({ x, y, width, height }) => {
-          const blurredRegion = ctx.getImageData(x, y, width, height);
-          for (let i = 0; i < blurredRegion.data.length; i += 4) {
-            const avg =
-              (blurredRegion.data[i] +
-                blurredRegion.data[i + 1] +
-                blurredRegion.data[i + 2]) /
-              3;
-            blurredRegion.data[i] = avg;
-            blurredRegion.data[i + 1] = avg;
-            blurredRegion.data[i + 2] = avg;
-          }
-          ctx.putImageData(blurredRegion, x, y);
-        });
-
-        resolve(canvas.toDataURL("image/jpeg").split(",")[1]);
-      };
-    });
+    return new File([blob], filename, { type: "image/png" });
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    setError(null);
+    if (!modifiedImage) {
+      setError("No modified image to upload.");
+      return;
+    }
 
-    const reader = new FileReader();
     setLoading(true);
 
-    reader.onloadend = async () => {
-      const result = reader.result as string;
-      const image = result.split(",")[1];
+    const image = modifiedImage.split(",")[1];
+    const imageFile = base64ToFile(modifiedImage, "modified_image.png");
 
-      try {
-        const url = await getSignedUrl();
-        const imageKey = url.split("?")[0].split("/").pop();
-        await uploadToS3(selectedFile, url);
+    try {
+      const url = await getSignedUrl();
+      const imageKey = url.split("?")[0].split("/").pop();
 
-        const coordinates = await analyze_receipt_api(
-          image,
-          API_ENDPOINT,
-          API_USER_DATA_COORDINATES_PROMPT
-        );
-
-        const blurredImage = await blurImage(image, coordinates);
-
-        const response: Receipt = await analyze_receipt_api(
-          blurredImage,
-          API_ENDPOINT,
-          API_PROMPT
-        );
-
-        response.surcharges = response.surcharges.map((surcharge) => {
-          if (
-            !surcharge.surcharge_percent &&
-            surcharge.surcharge_value &&
-            response.subtotal
-          ) {
-            const subtotal = parseFloat(response.subtotal);
-            const surchargeAmount = parseFloat(
-              surcharge.surcharge_value.replace(/,/g, "")
-            );
-            surcharge.surcharge_percent =
-              subtotal > 0
-                ? ((surchargeAmount / subtotal) * 100).toFixed(2) + "%"
-                : "0%";
-          }
-          return surcharge;
-        });
-        setResponseData(response);
-        setError(null);
-        await sendReceiptDataToBackend(response, selectedFile.name, imageKey);
-      } catch (error) {
-        console.error("Error analyzing receipt:", error);
-        setError("Error analyzing receipt. Please try again.");
-      } finally {
+      if (!imageKey) {
+        console.error("Failed to extract image key from URL");
         setLoading(false);
+        return;
       }
-    };
 
-    reader.readAsDataURL(selectedFile);
+      await uploadToS3(imageFile, url);
+
+      const response: Receipt = await analyze_receipt_api(
+        image,
+        API_ENDPOINT,
+        API_PROMPT
+      );
+
+      response.surcharges = response.surcharges.map((surcharge) => {
+        if (
+          !surcharge.surcharge_percent &&
+          surcharge.surcharge_value &&
+          response.subtotal
+        ) {
+          const subtotal = parseFloat(response.subtotal);
+          const surchargeAmount = parseFloat(
+            surcharge.surcharge_value.replace(/,/g, "")
+          );
+          surcharge.surcharge_percent =
+            subtotal > 0
+              ? ((surchargeAmount / subtotal) * 100).toFixed(2) + "%"
+              : "0%";
+        }
+        return surcharge;
+      });
+
+      setResponseData(response);
+      setError(null);
+      await sendReceiptDataToBackend(response, selectedFile!.name, imageKey);
+    } catch (error) {
+      console.error("Error analyzing receipt:", error);
+      setError("Error analyzing receipt. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getSignedUrl = async () => {
@@ -229,6 +305,7 @@ const UploadReceipt = () => {
       throw new Error("Failed to get S3 signed URL");
     }
   };
+
   const uploadToS3 = async (file: File, s3URL: string) => {
     try {
       const formData = new FormData();
@@ -251,6 +328,20 @@ const UploadReceipt = () => {
     imageName: string,
     imageKey: string
   ) => {
+    if (
+      !data.restaurant_name &&
+      !data.subtotal &&
+      !data.total &&
+      data.surcharges.length == 0 &&
+      Object.keys(data.taxes).length == 0 &&
+      !data.image
+    ) {
+      setError(
+        "It looks like you've not uploaded a bill, please upload a valid bill!"
+      );
+      setResponseData(null);
+      return;
+    }
     if (!data || !data.date || !data.restaurant_name) {
       setError("Incomplete receipt data received.");
       return;
@@ -327,8 +418,40 @@ const UploadReceipt = () => {
       </button>
       <div className="page-container">
         <h2 className="page-heading">Upload Receipt</h2>
-        <input type="file" accept="image/*" onChange={handleFileChange} />
-        <button onClick={handleUpload} className="upload-btn">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          aria-label="Upload receipt image"
+        />
+        {selectedFile && isEditing && (
+          <div className="image-editor-container">
+            <div style={{ color: "red" }}>
+              We value your security! Please erase all user data from the bill
+              before uploading!
+            </div>
+            <br />
+            <canvas
+              ref={canvasRef}
+              id="receiptCanvas"
+              className="receipt-canvas"
+              onMouseDown={handleCanvasMouseDown}
+              onMouseMove={handleCanvasMouseMove}
+              onMouseUp={handleCanvasMouseUp}
+              width={600}
+              height={800}
+              aria-label="Canvas for editing receipt image"
+            ></canvas>
+            <button onClick={handleSaveChanges} className="save-btn">
+              Save Changes
+            </button>
+          </div>
+        )}
+        <button
+          onClick={handleUpload}
+          className="upload-btn"
+          disabled={!selectedFile || loading}
+        >
           Upload
         </button>
         {error && <p style={{ color: "red" }}>{error}</p>}
@@ -362,7 +485,6 @@ const UploadReceipt = () => {
                 <span>No taxes available.</span>
               )}
             </div>
-
             <div className="surcharges-section">
               <h4 className="surcharges-title">Surcharges</h4>
               {responseData.surcharges && responseData.surcharges.length > 0 ? (

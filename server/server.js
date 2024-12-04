@@ -21,9 +21,9 @@ const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
   origin: [
-    "https://receiptaurant-delta.vercel.app",
-    "https://receiptaurant-server.vercel.app",
-    "http://localhost:5173",
+    //"https://receiptaurant-delta.vercel.app",
+    //"https://receiptaurant-server.vercel.app",
+    "http://localhost:5174",
     "http://localhost:8080",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

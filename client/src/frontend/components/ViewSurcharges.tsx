@@ -7,6 +7,7 @@ import "../styles/ViewSurcharges.css";
 import Loader from "./Loader";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import MapDisplay from "./MapDisplay";
 
 const ViewSurcharges: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -24,6 +25,7 @@ const ViewSurcharges: React.FC = () => {
   }>({});
 
   const [imageURL, setImageURL] = useState<string | null>(null);
+  const [isMapView, setIsMapView] = useState(false);
 
   const navigate = useNavigate();
 
@@ -141,6 +143,10 @@ const ViewSurcharges: React.FC = () => {
     setImageURL(null);
   };
 
+  const handleToggleChange = () => {
+    setIsMapView((prev) => !prev); // Toggle between map and card views
+  };
+
   return (
     <div className="home-container">
       <Header />
@@ -148,9 +154,17 @@ const ViewSurcharges: React.FC = () => {
         <FaArrowLeft style={{ marginRight: "8px" }} />
         Back
       </button>
-      <div style={{ marginTop: "50px" }}>
+      <div style={{ marginTop: "10px" }}>
         <div className="restaurants-header">
           <h2>Restaurants</h2>
+          <div className="toggle-container">
+            <span>Card View</span>
+            <label className="toggle-switch">
+              <input type="checkbox" checked={isMapView} onChange={handleToggleChange} />
+              <span className="slider"></span>
+            </label>
+            <span>Map View</span>
+          </div>
         </div>
         {!loading ? (
           <div>
@@ -163,6 +177,11 @@ const ViewSurcharges: React.FC = () => {
                 className="search-bar"
               />
             </div>
+            {isMapView ? (
+              <div style={{ width: "100%", height: "100%" }}>
+                  <MapDisplay />
+              </div>
+            ) : (
 
             <div className="restaurant-cards">
               {filteredRestaurants.map((restaurant) => (
@@ -177,7 +196,7 @@ const ViewSurcharges: React.FC = () => {
                 </div>
               ))}
             </div>
-
+            )}
             {selectedRestaurantName && (
               <div className="surcharges-section">
                 <div className="surcharges-header">
