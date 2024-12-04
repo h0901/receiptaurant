@@ -120,6 +120,11 @@ input[type="file"] {
 }
 
 .save-btn {
-  background-color: #c0392b;
+  background-color: #5c4033;
   color: white;
+}
+
+.upload-btn:disabled {
+  background-color: grey;
+  cursor: not-allowed;
 }
