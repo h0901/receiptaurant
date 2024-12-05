@@ -491,11 +491,13 @@ const UploadReceipt = () => {
             <div className="response-item">
               Taxes:
               {responseData && responseData.taxes ? (
-                Object.entries(responseData.taxes).map(([tax_name, tax_value], index) => (
-                  <div key={index}>
-                    <strong>{tax_name}:</strong> {tax_value}
-                  </div>
-                ))
+                Object.entries(responseData.taxes).map(
+                  ([tax_name, tax_value], index) => (
+                    <div key={index}>
+                      <strong>{tax_name}:</strong> {tax_value}
+                    </div>
+                  )
+                )
               ) : (
                 <span>No taxes available.</span>
               )}

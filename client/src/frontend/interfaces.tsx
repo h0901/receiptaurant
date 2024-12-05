@@ -23,8 +23,9 @@ export interface Restaurant {
   res_id: number;
   Name: string;
   location: string;
+  lat?: number;
+  lng?: number;
 }
-
 export interface LoaderText {
   text: string;
 }

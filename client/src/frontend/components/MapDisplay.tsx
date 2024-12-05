@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from "@vis.gl/react-google-maps";
 import "../styles/MapDisplay.css";
-
-export interface Restaurant {
-    res_id: number;
-    Name: string;
-    location: string;
-    lat?: number;
-    lng?: number;
-  }
+import { Restaurant } from "../interfaces";
 
 const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({ restaurants }) => {
     const [geocodedRestaurants, setGeocodedRestaurants] = useState<Restaurant[]>([]);
