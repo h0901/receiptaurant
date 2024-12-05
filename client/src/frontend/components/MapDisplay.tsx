@@ -11,13 +11,24 @@ import { Restaurant, Surcharge } from "../interfaces";
 import backendApi from "../apis/axiosConfig";
 import { FaEye } from "react-icons/fa";
 import "../styles/MapDisplay.css";
+import { API_GOOGLE_MAPS_KEY } from "../apis/config";
+import Surcharges from "./Surcharges";
 
-const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({ restaurants }) => {
-  const [geocodedRestaurants, setGeocodedRestaurants] = useState<Restaurant[]>([]);
-  const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
-  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
+const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({
+  restaurants,
+}) => {
+  const [geocodedRestaurants, setGeocodedRestaurants] = useState<Restaurant[]>(
+    []
+  );
+  const [selectedRestaurant, setSelectedRestaurant] =
+    useState<Restaurant | null>(null);
+  const [mapCenter, setMapCenter] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [surcharges, setSurcharges] = useState<Surcharge[]>([]);
   const [imageURL, setImageURL] = useState<string | null>(null);
+  const [viewSurcharge, setViewSurcharge] = useState(false);
 
   useEffect(() => {
     const geocodeAddresses = async () => {
@@ -89,6 +100,12 @@ const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({ restaurants }) =>
     setImageURL(null);
   };
 
+  const closeModal = () => {
+    setViewSurcharge(false);
+    setSelectedRestaurant(null);
+    setSurcharges([]);
+  };
+
   return (
     <div
       style={{
@@ -100,7 +117,7 @@ const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({ restaurants }) =>
         zIndex: 1,
       }}
     >
-      <APIProvider apiKey="AIzaSyBaS0jphBt4LprEgnnoH5XU10iyhTPqrU0">
+      <APIProvider apiKey={API_GOOGLE_MAPS_KEY}>
         {geocodedRestaurants.length > 0 ? (
           <Map
             defaultZoom={7}
@@ -122,7 +139,11 @@ const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({ restaurants }) =>
                   position={{ lat: restaurant.lat!, lng: restaurant.lng! }}
                   onClick={() => handleMarkerClick(restaurant)}
                 >
-                  <Pin background="grey" borderColor="green" glyphColor="purple" />
+                  <Pin
+                    background="grey"
+                    borderColor="green"
+                    glyphColor="brown"
+                  />
                 </AdvancedMarker>
               ))}
             {selectedRestaurant && (
@@ -142,28 +163,24 @@ const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({ restaurants }) =>
                   {surcharges.length > 0 ? (
                     <ul className="surcharge-list">
                       {surcharges.map((surcharge, index) => (
-                        <li key={surcharge.sur_id || index} className="surcharge-item-list">
+                        <li
+                          key={surcharge.sur_id || index}
+                          className="surcharge-item-list"
+                        >
                           <div className="surcharge-title">
                             {surcharge.surcharge_name || "Unknown Surcharge"}
                           </div>
                           <div className="surcharge-details">
                             <span className="surcharge-percentage">
-                              Percentage: {surcharge.surcharge_percent || "N/A"}%
-                            </span><br/>
-                            <span className="surcharge-amount">
-                              Value: {surcharge.surcharge_amount || "N/A"}
-                            </span><br/>
-                            <span className="surcharge-date">
-                              Date:{" "}
-                              {surcharge.Bill_Date
-                                ? new Date(surcharge.Bill_Date).toLocaleDateString()
-                                : "N/A"}
+                              Percentage: {surcharge.surcharge_percent || "N/A"}
+                              %
                             </span>
+                            <br />
                             <div className="image-display">
                               {surcharge.Image_key && (
                                 <button
                                   className="image-button"
-                                  onClick={() => handleViewImage(surcharge.Image_key!)}
+                                  onClick={() => setViewSurcharge(true)}
                                 >
                                   <FaEye className="image-icon" size="lg" />
                                 </button>
@@ -174,7 +191,16 @@ const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({ restaurants }) =>
                       ))}
                     </ul>
                   ) : (
-                    <p className="no-surcharge-text" style={{marginBottom: '15px', fontSize: '14px'}}>No surcharges available.</p>
+                    <p
+                      className="no-surcharge-text"
+                      style={{
+                        marginBottom: "15px",
+                        //fontSize: "14px",
+                        color: "black",
+                      }}
+                    >
+                      No surcharges available.
+                    </p>
                   )}
                 </div>
               </InfoWindow>
@@ -184,6 +210,15 @@ const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({ restaurants }) =>
           <p>Loading map...</p>
         )}
       </APIProvider>
+
+      {viewSurcharge && (
+        <Surcharges
+          surcharges={surcharges}
+          selectedRestaurantName={selectedRestaurant!.Name}
+          closeModal={closeModal}
+          handleViewImage={handleViewImage}
+        />
+      )}
 
       {imageURL && (
         <div className="image-modal">

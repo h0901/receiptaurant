@@ -57,3 +57,5 @@ export const API_YELP_PROMOTIONS_KEY = `Y7BKhvltcCcOts52AX1ZTslZsX9iWPwX_TpOT62W
 export const API_YELP_CLIENT_ID = `rbD-n8-ou2PEnUXc1qaQBQ`;
 
 export const API_YELP_ENDPOINT = `https://api.yelp.com/v3/businesses/search`;
+
+export const API_GOOGLE_MAPS_KEY = "AIzaSyBaS0jphBt4LprEgnnoH5XU10iyhTPqrU0"
