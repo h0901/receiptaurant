@@ -175,15 +175,18 @@ h2 {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
   position: fixed;
-  left: 0;
-  top: 40px;
-  margin-top: 45px;
-  margin-left: 10px;
+  left: 10px;
+  top: 90px;
+  z-index: 10;
 }
 
 .back-button:hover {
   background-color: #d35400;
   transform: translateY(-2px);
+}
+
+.map-view-button {
+  background-color: #5c4033;
 }
 
 .back-button:active {

@@ -19,6 +19,13 @@ export interface Surcharge {
   Image_key: string;
 }
 
+export interface SurchargesProps {
+  surcharges: Surcharge[];
+  selectedRestaurantName: string;
+  closeModal: () => void;
+  handleViewImage: (imageKey: string) => void;
+}
+
 export interface Restaurant {
   res_id: number;
   Name: string;
