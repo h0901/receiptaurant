@@ -9,22 +9,10 @@ const s3UploadRoute = require("./routes/bucketupload.js");
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// const corsOptions = {
-//   origin: [
-//     "https://receiptaurant-delta.vercel.app",
-//     "https://receiptaurant-server.vercel.app",
-//   ],
-//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// };
-
 const corsOptions = {
   origin: [
-    //"https://receiptaurant-delta.vercel.app",
-    //"https://receiptaurant-server.vercel.app",
-    "http://localhost:5174",
-    "http://localhost:8080",
+    "https://receiptaurant-delta.vercel.app",
+    "https://receiptaurant-server.vercel.app",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
