@@ -407,7 +407,7 @@ const UploadReceipt = () => {
 
       if (data.surcharges && Array.isArray(data.surcharges)) {
         for (const surcharge of data.surcharges) {
-          //const surchargeName = surcharge["surcharge_name"];
+          const surchargeName = surcharge["surcharge_name"];
           let surchargePercent = surcharge["surcharge_percent"]
             ? parseFloat(
                 String(surcharge["surcharge_percent"]).replace("%", "")
@@ -427,13 +427,13 @@ const UploadReceipt = () => {
               subtotal > 0 ? (surchargeAmount / subtotal) * 100 : 0;
           }
 
-          // await backendApi.post("/surcharge", {
-          //   res_id: restaurantId,
-          //   bill_id: billId,
-          //   surcharge_name: surchargeName,
-          //   surcharge_percent: surchargePercent,
-          //   surcharge_amount: surchargeAmount,
-          // });
+          await backendApi.post("/surcharge", {
+            res_id: restaurantId,
+            bill_id: billId,
+            surcharge_name: surchargeName,
+            surcharge_percent: surchargePercent,
+            surcharge_amount: surchargeAmount,
+          });
         }
       }
       setSuccessfullUpload(true);
