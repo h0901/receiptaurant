@@ -50,7 +50,7 @@ input[type="file"] {
 .response-item {
   font-size: 16px;
   margin: 10px 0;
-  font-weight: 500;
+  font-weight: 1000;
   color: #6f4f37;
 }
 
@@ -93,4 +93,68 @@ input[type="file"] {
 .surcharge-percent {
   font-size: 16px;
   color: #dc3545;
+}
+
+.image-editor-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  color: #0e0d0d;
+}
+
+.receipt-canvas {
+  border: 1px solid #0e0d0d;
+  border-radius: 10px;
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+
+.error-message {
+  background-color: #b00020;
+  color: #fdecea;
+  padding: 10px 15px;
+  border: 1px solid #f5c2c7;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.success-message {
+  background-color: #0f5132;
+  color: #d1e7dd;
+  padding: 10px 15px;
+  border: 1px solid #badbcc;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.error-message svg,
+.success-message svg {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.save-btn,
+.upload-btn {
+  margin-top: 10px;
+  padding: 8px 15px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.save-btn {
+  background-color: #5c4033;
+  color: white;
+}
+
+.upload-btn:disabled {
+  background-color: grey;
+  cursor: not-allowed;
 }

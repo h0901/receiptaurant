@@ -1,12 +1,13 @@
-import { useState } from "react";
-import { analyze_receipt } from "../apis/analyzeReceipt";
+import { useEffect, useRef, useState } from "react";
+import { analyze_receipt_api } from "../apis/analyzeReceipt";
 import { Receipt } from "../interfaces";
 import backendApi from "../apis/axiosConfig";
 import Header from "./Header";
 import "../styles/UploadReceipt.css";
 import Loader from "./Loader";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { API_ENDPOINT, API_PROMPT } from "../apis/config";
 
 const UploadReceipt = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -15,10 +16,111 @@ const UploadReceipt = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [successfullUpload, setSuccessfullUpload] = useState<boolean>(false);
 
+  const [imageURL, setImageURL] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [modifiedImage, setModifiedImage] = useState<string | null>(null);
+
   const navigate = useNavigate();
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedFile(event.target.files?.[0] || null);
+    setError(null);
+    setResponseData(null);
+    setSuccessfullUpload(false);
+    const file = event.target.files?.[0] || null;
+    if (file) {
+      const validTypes = ["image/jpeg", "image/png"];
+      if (!validTypes.includes(file.type)) {
+        setError("Only JPG and PNG files are allowed.");
+        return;
+      }
+
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        setError("File size must not exceed 5MB.");
+        return;
+      }
+
+      setSelectedFile(file);
+      setError(null);
+      const url = URL.createObjectURL(file);
+      setImageURL(url);
+      setIsEditing(true);
+    }
+  };
+
+  useEffect(() => {
+    if (imageURL && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      if (ctx) {
+        const img = new Image();
+        img.src = imageURL;
+        img.onload = () => {
+          const maxWidth = window.innerWidth * 0.9;
+          const maxHeight = window.innerHeight * 0.8;
+          let imgWidth = img.width;
+          let imgHeight = img.height;
+
+          if (imgWidth > maxWidth || imgHeight > maxHeight) {
+            const widthRatio = maxWidth / imgWidth;
+            const heightRatio = maxHeight / imgHeight;
+            const scale = Math.min(widthRatio, heightRatio);
+            imgWidth *= scale;
+            imgHeight *= scale;
+          }
+
+          canvas.width = imgWidth;
+          canvas.height = imgHeight;
+
+          ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+        };
+      }
+    }
+  }, [imageURL]);
+
+  const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    setIsDrawing(true);
+    drawOnCanvas(e);
+  };
+
+  const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    drawOnCanvas(e);
+  };
+
+  const handleCanvasMouseUp = () => {
+    setIsDrawing(false);
+  };
+
+  const drawOnCanvas = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, 2 * Math.PI);
+    ctx.fillStyle = "black";
+    ctx.fill();
+    ctx.closePath();
+  };
+
+  const handleSaveChanges = () => {
+    if (canvasRef.current) {
+      const dataURL = canvasRef.current.toDataURL("image/png");
+      setModifiedImage(dataURL);
+      setIsEditing(false);
+      URL.revokeObjectURL(imageURL!);
+    }
   };
 
   const parseDate = (date: string): string | null => {
@@ -60,16 +162,22 @@ const UploadReceipt = () => {
               2,
               "0"
             )}`;
-          case "MM/DD/YY":
-            {
-              const yearMMDDYY = parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
-              return `${yearMMDDYY}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;
-            }
-          case "YY/MM/DD":
-            {
-              const yearYYMMDD = parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
-              return `${yearYYMMDD}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
-            }
+          case "MM/DD/YY": {
+            const yearMMDDYY =
+              parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
+            return `${yearMMDDYY}-${part1.padStart(2, "0")}-${part2.padStart(
+              2,
+              "0"
+            )}`;
+          }
+          case "YY/MM/DD": {
+            const yearYYMMDD =
+              parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
+            return `${yearYYMMDD}-${part2.padStart(2, "0")}-${part3.padStart(
+              2,
+              "0"
+            )}`;
+          }
           case "YYYY/MM/DD":
             return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(
               2,
@@ -81,25 +189,31 @@ const UploadReceipt = () => {
               "0"
             )}`;
           case "M/D/YY": {
-            const yearMDYY = parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
-            return `${yearMDYY}-${part1.padStart(2, "0")}-${part2.padStart(2, "0")}`;
+            const yearMDYY =
+              parseInt(part3, 10) < 50 ? `20${part3}` : `19${part3}`;
+            return `${yearMDYY}-${part1.padStart(2, "0")}-${part2.padStart(
+              2,
+              "0"
+            )}`;
           }
-          case "YY/M/D":
-            {
-              const yearYYMD = parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
-              return `${yearYYMD}-${part2.padStart(2, "0")}-${part3.padStart(2, "0")}`;
-            }
+          case "YY/M/D": {
+            const yearYYMD =
+              parseInt(part1, 10) < 50 ? `20${part1}` : `19${part1}`;
+            return `${yearYYMD}-${part2.padStart(2, "0")}-${part3.padStart(
+              2,
+              "0"
+            )}`;
+          }
           case "YYYY/M/D":
             return `${part1}-${part2.padStart(2, "0")}-${part3.padStart(
               2,
               "0"
             )}`;
           case "DD MMM YYYY":
-          case "DD-MMM-YYYY":
-            {
-              const month = monthMap[part2];
-              return `${part3}-${month}-${part1.padStart(2, "0")}`;
-            }
+          case "DD-MMM-YYYY": {
+            const month = monthMap[part2];
+            return `${part3}-${month}-${part1.padStart(2, "0")}`;
+          }
           default:
             return null;
         }
@@ -108,51 +222,160 @@ const UploadReceipt = () => {
     return null;
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile) return;
+  const base64ToFile = (base64String: string, filename: string): File => {
+    const base64Data = base64String.split(",")[1];
+    const byteCharacters = atob(base64Data);
 
-    const reader = new FileReader();
-    setLoading(true);
+    const byteArrays = new Uint8Array(byteCharacters.length);
 
-    reader.onloadend = async () => {
-      const result = reader.result as string;
-      const image = result.split(",")[1];
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteArrays[i] = byteCharacters.charCodeAt(i);
+    }
 
-      try {
-        const response: Receipt = await analyze_receipt(image);
+    const blob = new Blob([byteArrays], { type: "image/png" });
 
-        response.surcharges = response.surcharges.map((surcharge) => {
-          if (
-            !surcharge.surcharge_percent &&
-            surcharge.surcharge_value &&
-            response.subtotal
-          ) {
-            const subtotal = parseFloat(response.subtotal);
-            const surchargeAmount = parseFloat(
-              surcharge.surcharge_value.replace(/,/g, "")
-            );
-            surcharge.surcharge_percent =
-              subtotal > 0
-                ? ((surchargeAmount / subtotal) * 100).toFixed(2) + "%"
-                : "0%";
-          }
-          return surcharge;
-        });
-        setResponseData(response);
-        setError(null);
-        await sendReceiptDataToBackend(response, selectedFile.name);
-      } catch (error) {
-        console.error("Error analyzing receipt:", error);
-        setError("Error analyzing receipt. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    reader.readAsDataURL(selectedFile);
+    return new File([blob], filename, { type: "image/png" });
   };
 
-  const sendReceiptDataToBackend = async (data: Receipt, imageName: string) => {
+  const handleUpload = async () => {
+    setError(null);
+    if (!modifiedImage) {
+      setError("No modified image to upload.");
+      return;
+    }
+
+    setLoading(true);
+
+    const image = modifiedImage.split(",")[1];
+    const imageFile = base64ToFile(modifiedImage, "modified_image.png");
+
+    try {
+      const url = await getSignedUrl();
+      const imageKey = url.split("?")[0].split("/").pop();
+
+      if (!imageKey) {
+        console.error("Failed to extract image key from URL");
+        setLoading(false);
+        return;
+      }
+
+      await uploadToS3(imageFile, url);
+
+      const response: Receipt = await analyze_receipt_api(
+        image,
+        API_ENDPOINT,
+        API_PROMPT
+      );
+
+      if (Object.entries(response).length == 0) {
+        setError(
+          "It looks like you've not uploaded a bill, please upload a valid bill!"
+        );
+        return;
+      }
+
+      /*response.surcharges = response.surcharges.map((surcharge) => {
+        if (
+          !surcharge.surcharge_percent &&
+          surcharge.surcharge_value &&
+          response.subtotal
+        ) {
+          const subtotal = parseFloat(response.subtotal);
+          const surchargeAmount = parseFloat(
+            surcharge.surcharge_value.replace(/,/g, "")
+          );
+          surcharge.surcharge_percent =
+            subtotal > 0
+              ? ((surchargeAmount / subtotal) * 100).toFixed(2) + "%"
+              : "0%";
+        }
+        return surcharge;
+      });*/
+      response.surcharges = response.surcharges.map((surcharge) => {
+        if (
+          !surcharge.surcharge_percent &&
+          surcharge.surcharge_value &&
+          response.subtotal
+        ) {
+          const subtotal = parseFloat(response.subtotal);
+          const surchargeAmount = parseFloat(
+            String(surcharge.surcharge_value).replace(/,/g, "")
+          );
+          surcharge.surcharge_percent =
+            subtotal > 0
+              ? ((surchargeAmount / subtotal) * 100).toFixed(2) + "%"
+              : "0%";
+        }
+        return surcharge;
+      });
+
+      setResponseData(response);
+      setError(null);
+      await sendReceiptDataToBackend(response, selectedFile!.name, imageKey);
+    } catch (error) {
+      console.error("Error analyzing receipt:", error);
+      setError("Error analyzing receipt. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSignedUrl = async () => {
+    try {
+      const response = await backendApi.get("/s3Url");
+      return response.data.url;
+    } catch (err) {
+      console.error("Error fetching S3 signed URL:", err);
+      throw new Error("Failed to get S3 signed URL");
+    }
+  };
+
+  const uploadToS3 = async (file: File, s3URL: string) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      await fetch(s3URL, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    } catch (err) {
+      console.error("Error uploading file to S3:", err);
+      throw new Error("Failed to upload file to S3");
+    }
+  };
+
+  const sendReceiptDataToBackend = async (
+    data: Receipt,
+    imageName: string,
+    imageKey: string
+  ) => {
+    if (
+      (!data.restaurant_name &&
+        !data.location &&
+        !data.date &&
+        !data.subtotal &&
+        !data.total &&
+        data.surcharges.length == 0 &&
+        Object.keys(data.taxes).length == 0 &&
+        !data.image) ||
+      (data.restaurant_name === "Unknown" &&
+        data.location === "Unknown" &&
+        data.date === "Unknown" &&
+        !data.subtotal &&
+        !data.total &&
+        data.surcharges.length == 0 &&
+        Object.keys(data.taxes).length == 0 &&
+        !data.image)
+    ) {
+      setError(
+        "It looks like you've not uploaded a bill, please upload a valid bill!"
+      );
+      setResponseData(null);
+      return;
+    }
     if (!data || !data.date || !data.restaurant_name) {
       setError("Incomplete receipt data received.");
       return;
@@ -177,16 +400,20 @@ const UploadReceipt = () => {
         restaurant_id: restaurantId,
         bill_image: imageName,
         bill_date: formattedDate,
+        image_key: imageKey,
       });
       const billId = billResponse.data.billId;
+      console.log(billId);
 
       if (data.surcharges && Array.isArray(data.surcharges)) {
         for (const surcharge of data.surcharges) {
           const surchargeName = surcharge["surcharge_name"];
           let surchargePercent = surcharge["surcharge_percent"]
-            ? parseFloat(String(surcharge["surcharge_percent"]).replace("%", ""))
+            ? parseFloat(
+                String(surcharge["surcharge_percent"]).replace("%", "")
+              )
             : 0;
-            const surchargeAmount = surcharge.surcharge_value
+          const surchargeAmount = surcharge.surcharge_value
             ? parseFloat(
                 typeof surcharge.surcharge_value === "string"
                   ? surcharge.surcharge_value.replace(/,/g, "")
@@ -209,14 +436,14 @@ const UploadReceipt = () => {
           });
         }
       }
-      setSuccessfullUpload(true)
+      setSuccessfullUpload(true);
       //console.log("Data saved to the backend successfully.");
     } catch (error) {
       console.error("Error sending data to the backend:", error);
       setError("Failed to save receipt data to the backend.");
     }
   };
-  
+
   return (
     <div className="home-container">
       <Header />
@@ -225,13 +452,61 @@ const UploadReceipt = () => {
         Back
       </button>
       <div className="page-container">
+        {error && (
+          <p className="error-message">
+            <FaTimesCircle style={{ marginRight: "8px" }} /> {error}
+          </p>
+        )}
+        {successfullUpload && (
+          <p className="success-message">
+            <FaCheckCircle style={{ marginRight: "8px" }} /> Receipt uploaded
+            successfully!
+          </p>
+        )}
+
         <h2 className="page-heading">Upload Receipt</h2>
-        <input type="file" accept="image/*" onChange={handleFileChange} />
-        <button onClick={handleUpload} className="upload-btn">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          aria-label="Upload receipt image"
+        />
+        {selectedFile && isEditing && (
+          <div className="image-editor-container">
+            <div style={{ color: "red" }}>
+              We value your security! Please erase all user data from the bill
+              before uploading!
+            </div>
+            <br />
+            <canvas
+              ref={canvasRef}
+              id="receiptCanvas"
+              className="receipt-canvas"
+              onMouseDown={handleCanvasMouseDown}
+              onMouseMove={handleCanvasMouseMove}
+              onMouseUp={handleCanvasMouseUp}
+              width={600}
+              height={800}
+              aria-label="Canvas for editing receipt image"
+            ></canvas>
+            <button onClick={handleSaveChanges} className="save-btn">
+              Save Changes
+            </button>
+          </div>
+        )}
+        <button
+          onClick={handleUpload}
+          className="upload-btn"
+          disabled={!selectedFile || loading || isEditing}
+        >
           Upload
         </button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {successfullUpload && <p style={{ color: "green", marginTop: '10px' }}>Receipt uploaded successfully!</p>}
+        {/* {error && <p style={{ color: "red" }}>{error}</p>}
+        {successfullUpload && (
+          <p style={{ color: "green", marginTop: "10px" }}>
+            Receipt uploaded successfully!
+          </p>
+        )} */}
         {loading && <Loader text="Analyzing your receipt..." />}
         {!loading && responseData && (
           <div className="response-data">
@@ -246,16 +521,17 @@ const UploadReceipt = () => {
             <div className="response-item">
               Taxes:
               {responseData && responseData.taxes ? (
-                Object.entries(responseData.taxes).map(([tax_name, tax_value], index) => (
-                  <div key={index}>
-                    {tax_name}: {tax_value}
-                  </div>
-                ))
+                Object.entries(responseData.taxes).map(
+                  ([tax_name, tax_value], index) => (
+                    <div key={index}>
+                      <strong>{tax_name}:</strong> {tax_value}
+                    </div>
+                  )
+                )
               ) : (
                 <span>No taxes available.</span>
               )}
             </div>
-
             <div className="surcharges-section">
               <h4 className="surcharges-title">Surcharges</h4>
               {responseData.surcharges && responseData.surcharges.length > 0 ? (

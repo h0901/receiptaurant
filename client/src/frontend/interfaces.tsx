@@ -16,14 +16,23 @@ export interface Surcharge {
   surcharge_percent?: string;
   Bill_Date?: string;
   surcharge_amount: string;
+  Image_key: string;
+}
+
+export interface SurchargesProps {
+  surcharges: Surcharge[];
+  selectedRestaurantName: string;
+  closeModal: () => void;
+  handleViewImage: (imageKey: string) => void;
 }
 
 export interface Restaurant {
   res_id: number;
   Name: string;
   location: string;
+  lat?: number;
+  lng?: number;
 }
-
 export interface LoaderText {
-  text: string
+  text: string;
 }

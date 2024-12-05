@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
   console.log("Received get request at /api/restaurant");
   try {
     const [restaurants] = await db.query(
-      "SELECT Name, MIN(Restaurant_ID) AS res_id FROM Restaurant GROUP BY Name;"
+      "SELECT Name, MIN(Restaurant_ID) AS res_id, Location AS location FROM Restaurant GROUP BY Name;"
     );
     console.log("Database query result:", restaurants);
 
@@ -43,7 +43,7 @@ router.get("/:name/bills", async (req, res) => {
   const restaurantName = decodeURIComponent(req.params.name);
 
   const query = `
-      SELECT b.Bill_Date, s.surcharge_name, s.surcharge_percent, s.surcharge_amount
+      SELECT b.Bill_Date, b.Image_key, s.surcharge_name, s.surcharge_percent, s.surcharge_amount
       FROM Restaurant r
       JOIN Bill b ON r.Restaurant_ID = b.Restaurant_ID
       JOIN Surcharges s ON b.ID = s.bill_id

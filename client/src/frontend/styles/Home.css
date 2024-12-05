@@ -26,7 +26,13 @@
   min-height: 100vh;
   width: 100%;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #fdf7f2;
+  background: linear-gradient(
+      135deg,
+      rgba(243, 229, 216, 0.9),
+      rgba(248, 241, 231, 0.9)
+    ),
+    url("https://png.pngtree.com/background/20230519/original/pngtree-an-interior-area-of-an-empty-cafe-in-the-area-picture-image_2652948.jpg")
+      center/cover no-repeat;
   color: #3e2723;
   overflow-x: hidden;
   margin-top: 0;
@@ -115,6 +121,9 @@ h2 {
   letter-spacing: 3px;
   color: #fdf7f2;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 .app-title a {
@@ -126,12 +135,6 @@ h2 {
 .app-title a:hover {
   color: #f5a623;
   text-shadow: 0 0 8px rgba(245, 166, 35, 0.7);
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 15px;
 }
 
 .user-name {
@@ -172,10 +175,9 @@ h2 {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
   position: fixed;
-  left: 0;
-  top: 40px;
-  margin-top: 45px;
-  margin-left: 10px;
+  left: 10px;
+  top: 90px;
+  z-index: 10;
 }
 
 .back-button:hover {
@@ -183,6 +185,45 @@ h2 {
   transform: translateY(-2px);
 }
 
+.map-view-button {
+  background-color: #5c4033;
+  color: white
+}
+
 .back-button:active {
   transform: translateY(0);
+}
+
+.nav-tabs {
+  margin-left: 1em;
+  display: flex;
+  gap: 1rem;
+}
+
+.tab-button {
+  background: transparent;
+  border: none;
+  color: #fdf7f2;
+  font-size: 1.1rem;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-bottom: 2px solid transparent;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+}
+
+.tab-button:hover {
+  color: #f5d4a2;
+  border-bottom: 2px solid #f5d4a2;
+}
+
+.tab-button:active {
+  color: #f5a623;
+  border-bottom: 2px solid #f5a623;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-left: auto; /* Push profile to the far right */
 }

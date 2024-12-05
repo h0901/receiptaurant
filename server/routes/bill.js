@@ -4,12 +4,12 @@ const db = require("../db.js");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const { restaurant_id, bill_image, bill_date } = req.body;
+  const { restaurant_id, bill_image, bill_date, image_key} = req.body;
 
   try {
     const [result] = await db.query(
-      "INSERT INTO Bill (restaurant_id, bill_image, bill_date) VALUES (?, ?, ?)",
-      [restaurant_id, bill_image, bill_date]
+      "INSERT INTO Bill (restaurant_id, bill_image, bill_date, image_key) VALUES (?, ?, ?, ?)",
+      [restaurant_id, bill_image, bill_date, image_key]
     );
     res.status(201).json({ message: "Bill added", billId: result.insertId });
   } catch (error) {

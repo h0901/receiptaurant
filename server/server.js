@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const restaurantRoutes = require("./routes/restaurant.js");
 const billRoutes = require("./routes/bill.js");
 const surchargeRoutes = require("./routes/surcharges.js");
+const s3UploadRoute = require("./routes/bucketupload.js");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 app.use("/api/restaurant", restaurantRoutes);
 app.use("/api/bill", billRoutes);
 app.use("/api/surcharge", surchargeRoutes);
+app.use("/api/s3Url", s3UploadRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

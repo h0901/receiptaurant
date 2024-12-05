@@ -1,13 +1,16 @@
 import axios from "axios";
-import { API_ENDPOINT, API_PROMPT } from "./config";
 
-export const analyze_receipt = async (image: string) => {
+export const analyze_receipt_api = async (
+  image: string,
+  endpoint: string,
+  prompt: string
+) => {
   const requestBody = {
     contents: [
       {
         parts: [
           {
-            text: API_PROMPT,
+            text: prompt,
           },
           {
             inline_data: {
@@ -21,7 +24,7 @@ export const analyze_receipt = async (image: string) => {
   };
 
   try {
-    const response = await axios.post(API_ENDPOINT, requestBody, {
+    const response = await axios.post(endpoint, requestBody, {
       headers: {
         "Content-Type": "application/json",
       },

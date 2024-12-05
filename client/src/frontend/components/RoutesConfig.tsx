@@ -5,14 +5,13 @@ import UploadReceipt from "./UploadReceipt";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Home from "./Home";
-import ViewSurcharges from "./ViewSurcharges";
 
 const RoutesConfig = () => {
-  const { user} = useClerk();
+  const { user } = useClerk();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && window.location.pathname === '/') {
+    if (user && window.location.pathname === "/") {
       navigate("/home", { replace: true });
     }
   }, [user, navigate]);
@@ -33,14 +32,6 @@ const RoutesConfig = () => {
         element={
           <SignedIn>
             <UploadReceipt />
-          </SignedIn>
-        }
-      />
-      <Route
-        path="/view-restaurant"
-        element={
-          <SignedIn>
-            <ViewSurcharges />
           </SignedIn>
         }
       />
