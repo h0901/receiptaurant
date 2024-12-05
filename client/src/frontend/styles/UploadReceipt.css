@@ -50,7 +50,7 @@ input[type="file"] {
 .response-item {
   font-size: 16px;
   margin: 10px 0;
-  font-weight: 500;
+  font-weight: 1000;
   color: #6f4f37;
 }
 
@@ -109,6 +109,36 @@ input[type="file"] {
   border-radius: 10px;
   max-width: 100%;
   margin-bottom: 10px;
+}
+
+.error-message {
+  background-color: #b00020;
+  color: #fdecea;
+  padding: 10px 15px;
+  border: 1px solid #f5c2c7;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.success-message {
+  background-color: #0f5132;
+  color: #d1e7dd;
+  padding: 10px 15px;
+  border: 1px solid #badbcc;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.error-message svg,
+.success-message svg {
+  margin-right: 8px;
+  font-size: 20px;
 }
 
 .save-btn,

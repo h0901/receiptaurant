@@ -5,7 +5,7 @@ import backendApi from "../apis/axiosConfig";
 import Header from "./Header";
 import "../styles/UploadReceipt.css";
 import Loader from "./Loader";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { API_ENDPOINT, API_PROMPT } from "../apis/config";
 
@@ -452,6 +452,18 @@ const UploadReceipt = () => {
         Back
       </button>
       <div className="page-container">
+        {error && (
+          <p className="error-message">
+            <FaTimesCircle style={{ marginRight: "8px" }} /> {error}
+          </p>
+        )}
+        {successfullUpload && (
+          <p className="success-message">
+            <FaCheckCircle style={{ marginRight: "8px" }} /> Receipt uploaded
+            successfully!
+          </p>
+        )}
+
         <h2 className="page-heading">Upload Receipt</h2>
         <input
           type="file"
@@ -489,12 +501,12 @@ const UploadReceipt = () => {
         >
           Upload
         </button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {/* {error && <p style={{ color: "red" }}>{error}</p>}
         {successfullUpload && (
           <p style={{ color: "green", marginTop: "10px" }}>
             Receipt uploaded successfully!
           </p>
-        )}
+        )} */}
         {loading && <Loader text="Analyzing your receipt..." />}
         {!loading && responseData && (
           <div className="response-data">
