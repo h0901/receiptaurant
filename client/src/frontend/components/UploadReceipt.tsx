@@ -403,10 +403,11 @@ const UploadReceipt = () => {
         image_key: imageKey,
       });
       const billId = billResponse.data.billId;
+      console.log(billId);
 
       if (data.surcharges && Array.isArray(data.surcharges)) {
         for (const surcharge of data.surcharges) {
-          const surchargeName = surcharge["surcharge_name"];
+          //const surchargeName = surcharge["surcharge_name"];
           let surchargePercent = surcharge["surcharge_percent"]
             ? parseFloat(
                 String(surcharge["surcharge_percent"]).replace("%", "")
