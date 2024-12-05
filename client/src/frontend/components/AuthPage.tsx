@@ -1,5 +1,6 @@
 import { SignIn, SignUp } from "@clerk/clerk-react";
 import { useState } from "react";
+import "../styles/AuthPage.css";
 
 const AuthPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
