@@ -40,7 +40,7 @@ const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({
             const response = await fetch(
               `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
                 restaurant.location
-              )}&key=AIzaSyBaS0jphBt4LprEgnnoH5XU10iyhTPqrU0`
+              )}&key=${API_GOOGLE_MAPS_KEY}`
             );
             const data = await response.json();
 
@@ -162,40 +162,44 @@ const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({
                   <h3 className="restaurant-name">{selectedRestaurant.Name}</h3>
                   {surcharges.length > 0 ? (
                     <ul className="surcharge-list">
-                      {surcharges.map((surcharge, index) => (
-                        <li
-                          key={surcharge.sur_id || index}
-                          className="surcharge-item-list"
-                        >
-                          <div className="surcharge-title">
-                            {surcharge.surcharge_name || "Unknown Surcharge"}
-                          </div>
-                          <div className="surcharge-details">
-                            <span className="surcharge-percentage">
-                              Percentage: {surcharge.surcharge_percent || "N/A"}
-                              %
-                            </span>
-                            <br />
-                            <div className="image-display">
-                              {surcharge.Image_key && (
-                                <button
-                                  className="image-button"
-                                  onClick={() => setViewSurcharge(true)}
-                                >
-                                  <FaEye className="image-icon" size="lg" />
-                                </button>
-                              )}
+                      {(() => {
+                        const latestSurcharge =
+                          surcharges[surcharges.length - 1];
+                        return (
+                          <li
+                            key={latestSurcharge.sur_id || "latest"}
+                            className="surcharge-item-list"
+                          >
+                            <div className="surcharge-title">
+                              {latestSurcharge.surcharge_name ||
+                                "Unknown Surcharge"}
                             </div>
-                          </div>
-                        </li>
-                      ))}
+                            <div className="surcharge-details">
+                              <span className="surcharge-percentage">
+                                Percentage:{" "}
+                                {latestSurcharge.surcharge_percent || "N/A"}%
+                              </span>
+                              <br />
+                              <div className="image-display">
+                                {latestSurcharge.Image_key && (
+                                  <button
+                                    className="image-button"
+                                    onClick={() => setViewSurcharge(true)}
+                                  >
+                                    <FaEye className="image-icon" size="lg" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </li>
+                        );
+                      })()}
                     </ul>
                   ) : (
                     <p
                       className="no-surcharge-text"
                       style={{
                         marginBottom: "15px",
-                        //fontSize: "14px",
                         color: "black",
                       }}
                     >

@@ -145,25 +145,13 @@ const Home: React.FC = () => {
     setImageURL(null);
   };
 
-  // const handleToggleChange = () => {
-  //   setIsMapView((prev) => !prev);
-  // };
-
   const handleShowMap = () => {
     setShowMap(true);
   };
 
-  // const handleShowList = () => {
-  //   setShowMap(false);
-  // };
-
   return (
     <div className="home-container">
       <Header />
-      {/* <button className="back-button" onClick={() => setShowMap(false)}>
-        <FaArrowLeft style={{ marginRight: "8px" }} />
-        Back
-      </button> */}
       <main className="main-content">
         <h2>Welcome to Receiptaurant</h2>
         <div className="description">
