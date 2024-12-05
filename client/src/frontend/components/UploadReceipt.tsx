@@ -501,12 +501,6 @@ const UploadReceipt = () => {
         >
           Upload
         </button>
-        {/* {error && <p style={{ color: "red" }}>{error}</p>}
-        {successfullUpload && (
-          <p style={{ color: "green", marginTop: "10px" }}>
-            Receipt uploaded successfully!
-          </p>
-        )} */}
         {loading && <Loader text="Analyzing your receipt..." />}
         {!loading && responseData && (
           <div className="response-data">
