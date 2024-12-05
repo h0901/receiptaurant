@@ -267,6 +267,13 @@ const UploadReceipt = () => {
         API_PROMPT
       );
 
+      if (Object.entries(response).length == 0) {
+        setError(
+          "It looks like you've not uploaded a bill, please upload a valid bill!"
+        );
+        return;
+      }
+
       /*response.surcharges = response.surcharges.map((surcharge) => {
         if (
           !surcharge.surcharge_percent &&
@@ -346,12 +353,22 @@ const UploadReceipt = () => {
     imageKey: string
   ) => {
     if (
-      !data.restaurant_name &&
-      !data.subtotal &&
-      !data.total &&
-      data.surcharges.length == 0 &&
-      Object.keys(data.taxes).length == 0 &&
-      !data.image
+      (!data.restaurant_name &&
+        !data.location &&
+        !data.date &&
+        !data.subtotal &&
+        !data.total &&
+        data.surcharges.length == 0 &&
+        Object.keys(data.taxes).length == 0 &&
+        !data.image) ||
+      (data.restaurant_name === "Unknown" &&
+        data.location === "Unknown" &&
+        data.date === "Unknown" &&
+        !data.subtotal &&
+        !data.total &&
+        data.surcharges.length == 0 &&
+        Object.keys(data.taxes).length == 0 &&
+        !data.image)
     ) {
       setError(
         "It looks like you've not uploaded a bill, please upload a valid bill!"
@@ -386,6 +403,7 @@ const UploadReceipt = () => {
         image_key: imageKey,
       });
       const billId = billResponse.data.billId;
+      console.log(billId);
 
       if (data.surcharges && Array.isArray(data.surcharges)) {
         for (const surcharge of data.surcharges) {

@@ -34,10 +34,11 @@ Output Format:
     ...
   ],
   "taxes": {
-    "tax_name": "<tax_name>",
-    "tax_value": <tax_value>
+"<tax_name>": <tax_value>
   }
 }
+
+If the provided image cannot be converted, then just return {}
 
 Now generate the structured output based on the input above.
 `;

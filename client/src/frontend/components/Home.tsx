@@ -6,7 +6,6 @@ import Loader from "./Loader";
 import "../styles/Home.css";
 import "../styles/ViewSurcharges.css";
 import { Restaurant, Surcharge } from "../interfaces";
-import { useNavigate } from "react-router-dom";
 import MapDisplay from "./MapDisplay";
 import Surcharges from "./Surcharges";
 
@@ -26,7 +25,6 @@ const Home: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [imageURL, setImageURL] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRestaurants = async () => {
