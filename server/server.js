@@ -13,6 +13,7 @@ const corsOptions = {
   origin: [
     "https://receiptaurant-delta.vercel.app",
     "https://receiptaurant-server.vercel.app",
+    "https://receiptaurant-images.s3.us-east-2.amazonaws.com",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

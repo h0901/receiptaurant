@@ -19,24 +19,24 @@ const s3Client = new S3Client({
 });
 
 async function generateViewImageURL(imageKey) {
-    const command = new GetObjectCommand({
-        Bucket: bucketName,
-        Key: imageKey,
-    });
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: imageKey,
+  });
 
-    const imageURL = await getSignedUrl(s3Client, command, { expiresIn: 60 });
-    return imageURL;
+  const imageURL = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+  return imageURL;
 }
 
 router.get("/viewImage/:imageKey", async (req, res) => {
-    try {
-        const { imageKey } = req.params;
-        const imageUrl = await generateViewImageURL(imageKey);
-        res.send({ imageUrl });
-    } catch (error) {
-        console.error("Error fetching image URL:", error);
-        res.status(500).send({ error: "Failed to fetch image URL" });
-    }
+  try {
+    const { imageKey } = req.params;
+    const imageUrl = await generateViewImageURL(imageKey);
+    res.send({ imageUrl });
+  } catch (error) {
+    console.error("Error fetching image URL:", error);
+    res.status(500).send({ error: "Failed to fetch image URL" });
+  }
 });
 
 module.exports = router;
