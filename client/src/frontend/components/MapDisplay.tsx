@@ -120,7 +120,7 @@ const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({
       <APIProvider apiKey={API_GOOGLE_MAPS_KEY}>
         {geocodedRestaurants.length > 0 ? (
           <Map
-            defaultZoom={7}
+            defaultZoom={4.5}
             minZoom={3}
             zoomControl={true}
             defaultCenter={{

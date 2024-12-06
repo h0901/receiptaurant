@@ -11,12 +11,12 @@ Required Fields:
 3. **date**: The transaction date, excluding the time.
 4. **subtotal**: The total amount before taxes and surcharges.
 5. **total**: The final amount due after all calculations.
-6. **surcharges**: A list of additional charges (excluding taxes) with each item structured as:
+6. **surcharges**: A list of additional charges (excluding taxes such as salestax) with each item structured as:
    - **surcharge_name**: Use the name specified on the receipt. If no name is specified, derive a meaningful name from nearby descriptive text or use "unknown" if unavailable.
    - **surcharge_value**: The monetary value of the surcharge.
    - **surcharge_percent**: Include the percentage (e.g., "3.25%") if listed, or leave this field empty if not available.
 7. **taxes**: An object representing the taxes charged by the restaurant, structured as:
-   - **tax_name**: The name of the tax (e.g., "Sales Tax").
+   - **tax_name**: The name of the tax ("Sales Tax").
    - **tax_value**: The monetary amount of the tax.
 
 Output Format:

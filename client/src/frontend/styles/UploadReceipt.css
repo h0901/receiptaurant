@@ -123,7 +123,7 @@ input[type="file"] {
   align-items: center;
 }
 
-.success-message {
+/* .success-message {
   background-color: #0f5132;
   color: #d1e7dd;
   padding: 10px 15px;
@@ -133,6 +133,20 @@ input[type="file"] {
   margin-top: 10px;
   display: flex;
   align-items: center;
+} */
+.success-message {
+  margin-top: 100px !important;
+  background-color: #0f5132;
+  color: #d1e7dd;
+  padding: 10px 15px;
+  border: 1px solid #badbcc;
+  border-radius: 5px;
+  font-size: 16px;
+  margin: 20px auto; /* Add auto to center and ensure space from other elements */
+  display: flex;
+  align-items: center;
+  max-width: 90%; /* Optional: To control width */
+  box-sizing: border-box; /* Ensures padding and border don't affect total width */
 }
 
 .error-message svg,
