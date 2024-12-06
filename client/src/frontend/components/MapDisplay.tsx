@@ -161,40 +161,33 @@ const MapDisplay: React.FC<{ restaurants: Restaurant[] }> = ({
                 <div className="restaurant-info-container">
                   <h3 className="restaurant-name">{selectedRestaurant.Name}</h3>
                   {surcharges.length > 0 ? (
-                    <ul className="surcharge-list">
-                      {(() => {
-                        const latestSurcharge =
-                          surcharges[surcharges.length - 1];
-                        return (
+                    <>
+                      <ul className="surcharge-list">
+                        {surcharges.map((surcharge) => (
                           <li
-                            key={latestSurcharge.sur_id || "latest"}
+                            key={surcharge.sur_id || Math.random()}
                             className="surcharge-item-list"
                           >
-                            <div className="surcharge-title">
-                              {latestSurcharge.surcharge_name ||
-                                "Unknown Surcharge"}
-                            </div>
                             <div className="surcharge-details">
                               <span className="surcharge-percentage">
-                                Percentage:{" "}
-                                {latestSurcharge.surcharge_percent || "N/A"}%
+                                {surcharge.surcharge_name}:{" "}
+                                {surcharge.surcharge_percent || "N/A"}%
                               </span>
-                              <br />
-                              <div className="image-display">
-                                {latestSurcharge.Image_key && (
-                                  <button
-                                    className="image-button"
-                                    onClick={() => setViewSurcharge(true)}
-                                  >
-                                    <FaEye className="image-icon" size="lg" />
-                                  </button>
-                                )}
-                              </div>
                             </div>
                           </li>
-                        );
-                      })()}
-                    </ul>
+                        ))}
+                      </ul>
+                      {surcharges.some((s) => s.Image_key) && (
+                        <div className="image-display">
+                          <button
+                            className="image-button"
+                            onClick={() => setViewSurcharge(true)}
+                          >
+                            <FaEye className="image-icon" size="lg" />
+                          </button>
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <p
                       className="no-surcharge-text"
