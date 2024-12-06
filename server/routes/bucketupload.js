@@ -8,7 +8,8 @@ const router = express.Router();
 const bucketName = "receiptaurant-images";
 const region = "us-east-2";
 const accessKeyId = "AKIA4WJPWKRLYJUQIVMK"; //process.env.AWS_ACCESS_KEY_ID;
-const secretAccessKey = "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"; process.env.AWS_SECRET_ACCESS_KEY;
+const secretAccessKey = "QJJF2N7rou4JNgY9HQWPyybdI1kBkiBfid/xWOkf";
+process.env.AWS_SECRET_ACCESS_KEY;
 
 const s3Client = new S3Client({
   region,
@@ -34,7 +35,7 @@ async function generateViewImageURL(imageKey) {
     Key: imageKey,
   });
 
-  const imageURL = await getSignedUrl(s3Client, command, { expiresIn: 60 });
+  const imageURL = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
   return imageURL;
 }
 
