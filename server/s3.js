@@ -25,7 +25,7 @@ async function generateUploadURL() {
     Key: imageName,
   });
 
-  const uploadURL = await getSignedUrl(s3Client, command, { expiresIn: 60 });
+  const uploadURL = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
   return uploadURL;
 }
 
