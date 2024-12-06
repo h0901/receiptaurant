@@ -7,8 +7,10 @@ const router = express.Router();
 
 const bucketName = "receiptaurant-images";
 const region = "us-east-2";
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+const accessKeyId = "AKIA4WJPWKRLYJUQIVMK";
+process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = "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";
+process.env.AWS_SECRET_ACCESS_KEY;
 
 const s3Client = new S3Client({
   region,
